@@ -85,7 +85,7 @@ export class VpnHoodApp {
     const appData = new VpnHoodAppData(
       config.state,
       config.userSettings,
-      config.features,
+      config.descriptor,
       config.intentFeatures,
       config.vpnProfileInfos,
       config.availableCultureInfos,
@@ -158,8 +158,8 @@ export class VpnHoodApp {
     // Publish only real changes, per field — same reasoning as in reloadState. A save bumps
     // configTime, which lands here on the next poll; the fetched settings then equal what the UI
     // already shows, and republishing them re-rendered every settings reader right after each save.
-    if (JSON.stringify(appInfo.features) !== JSON.stringify(this.data.features))
-      this.data.features = appInfo.features;
+    if (JSON.stringify(appInfo.descriptor) !== JSON.stringify(this.data.features))
+      this.data.features = appInfo.descriptor;
     
     const userSettingsJson = JSON.stringify(appInfo.userSettings);
     if (userSettingsJson !== JSON.stringify(this.data.userSettings))
@@ -338,7 +338,7 @@ export class VpnHoodApp {
     return !this.data.features.isAddAccessKeySupported;
   }
 
-  // Decided entirely by the app (AppFeatures) - never by which product the SPA thinks it is.
+  // Decided entirely by the app (AppDescriptor) - never by which product the SPA thinks it is.
   // Null means the build ships no such document: hide the link, never guess an address.
   public privacyPolicyUrl(): string | null {
     return this.data.features.links.privacyPolicy ?? null;

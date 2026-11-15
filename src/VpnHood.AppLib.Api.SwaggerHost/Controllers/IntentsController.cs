@@ -44,6 +44,12 @@ public class IntentsController : ControllerBase, IIntentsApi
         throw new SwaggerOnlyException();
     }
 
+    [HttpPost("share-log")]
+    public Task ShareLog(CancellationToken cancellationToken)
+    {
+        throw new SwaggerOnlyException();
+    }
+
     [HttpPost("open-app-settings")]
     public Task OpenAppSettings(CancellationToken cancellationToken)
     {

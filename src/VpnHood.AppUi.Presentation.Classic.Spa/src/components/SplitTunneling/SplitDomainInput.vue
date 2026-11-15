@@ -68,10 +68,6 @@ const blockDomainFilters = computed<string>({
           <v-chip text="example.com" tabindex="-1"/>
         </li>
         <li class="mt-2">
-          {{ locale('WILDCARD_DOMAIN') }}
-          <v-chip text="*.example.com" tabindex="-1"/>
-        </li>
-        <li class="mt-2">
           {{ locale('COMMENT') }}
           <v-chip :text="locale('COMMENT_DESC')" tabindex="-1"/>
         </li>

@@ -5,6 +5,9 @@ using VpnHood.AppLib.App;
 using VpnHood.AppUi.Hosting.Maui;
 using VpnHood.Core.Client.Abstractions;
 using VpnHood.Net.Toolkit.Assets;
+#if WINDOWS
+using VpnHood.Core.Client.VpnServices.Host.WindowsTun;
+#endif
 
 namespace AppUiSample.Spa.Maui;
 
@@ -75,7 +78,13 @@ public static class MauiProgram
             });
 
         // the app, started once in this process from the same init params as every head
-        VpnHoodAppMaui.Init(CreateInitParams());
+        var initParams = CreateInitParams();
+#if WINDOWS
+        // Android starts the VPN service itself; on Windows nothing does, so the tunnel runs in this process too
+        VpnHoodAppMaui.Init(initParams, new WindowsInProcessDevice(initParams.ResolveStoragePath(), IsDebugMode));
+#else
+        VpnHoodAppMaui.Init(initParams);
+#endif
 
         if (IsDebugMode)
             builder.Logging.AddDebug();

@@ -4,7 +4,7 @@ import { UserState } from '@/helpers/UserState';
 import {
   AppConnectionState,
   AppFeature,
-  AppFeatures,
+  AppDescriptor,
   AppOsType,
   DeviceIntentFeatures,
   AppState,
@@ -25,7 +25,7 @@ export class VpnHoodAppData {
   public userState: UserState = new UserState();
   public state: AppState;
   public userSettings: UserSettings;
-  public features: AppFeatures;
+  public features: AppDescriptor;
   public intentFeatures: DeviceIntentFeatures;
   public vpnProfileInfos: VpnProfileInfo[];
   public cultureInfos: UiCultureInfo[];
@@ -38,7 +38,7 @@ export class VpnHoodAppData {
   public constructor(
     state: AppState,
     userSettings: UserSettings,
-    features: AppFeatures,
+    features: AppDescriptor,
     intentFeatures: DeviceIntentFeatures,
     vpnProfileInfos: VpnProfileInfo[],
     cultureInfos: UiCultureInfo[],
@@ -286,7 +286,7 @@ export class VpnHoodAppData {
 
   // The TCP forwarding switch: what the session does, else the setting
   get isTcpForwardingSwitchOn(): boolean {
-    return this.state.sessionStatus?.isTcpProxy ?? this.userSettings.useTcpProxy;
+    return this.state.sessionStatus?.isTcpForwarding ?? this.userSettings.useTcpForwarding;
   }
 
   public isProtocolEnabled(protocol: ChannelProtocol): boolean {

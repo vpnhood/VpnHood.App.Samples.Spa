@@ -5,7 +5,7 @@ import i18n from '@/locales/i18n';
 import { computed } from 'vue';
 import router from '@/services/router';
 import { Util } from '@/helpers/Util';
-import { ChannelProtocol, TcpProxyUsageReason } from '@/services/VpnHood.Client.Api';
+import { ChannelProtocol, TcpForwardingLockReason } from '@/services/VpnHood.Client.Api';
 
 const vhApp = VpnHoodApp.instance;
 const locale = i18n.global.t;
@@ -50,14 +50,14 @@ const activeProtocol = computed<ChannelProtocol>({
 const tcpForwarding = computed({
   get: () => vhApp.data.isTcpForwardingSwitchOn,
   set: async (value: boolean) => {
-    if (!vhApp.data.userSettings.isTcpProxyPrompted)
+    if (!vhApp.data.userSettings.isTcpForwardingPrompted)
       await router.push({ name: 'CLOAK_MODE' });
 
     // Update session status to reflect the change immediately
     if (vhApp.data.state.sessionStatus)
-      vhApp.data.state.sessionStatus.isTcpProxy = value;
+      vhApp.data.state.sessionStatus.isTcpForwarding = value;
 
-    vhApp.data.userSettings.useTcpProxy = value;
+    vhApp.data.userSettings.useTcpForwarding = value;
     await vhApp.saveUserSetting();
   }
 });
@@ -90,11 +90,11 @@ const dropQuic = computed({
   }
 });
 
-const canChangeTcpForwarding = computed<boolean>(() => vhApp.data.state.tcpProxyUsageReason === TcpProxyUsageReason.None);
-const isTcpForwardingEnforcedByDomainFilter = computed<boolean>(() => vhApp.data.state.tcpProxyUsageReason === TcpProxyUsageReason.SplitDomainRequiredOn);
+const canChangeTcpForwarding = computed<boolean>(() => vhApp.data.state.tcpForwardingLockReason === TcpForwardingLockReason.None);
+const isTcpForwardingEnforcedByDomainFilter = computed<boolean>(() => vhApp.data.state.tcpForwardingLockReason === TcpForwardingLockReason.SplitDomainRequiredOn);
 const isTcpForwardingEnforcedByServer = computed<boolean>(() =>
-  vhApp.data.state.tcpProxyUsageReason === TcpProxyUsageReason.ServerRequiredOff ||
-  vhApp.data.state.tcpProxyUsageReason === TcpProxyUsageReason.ServerRequiredOn);
+  vhApp.data.state.tcpForwardingLockReason === TcpForwardingLockReason.ServerRequiredOff ||
+  vhApp.data.state.tcpForwardingLockReason === TcpForwardingLockReason.ServerRequiredOn);
 
 
 </script>

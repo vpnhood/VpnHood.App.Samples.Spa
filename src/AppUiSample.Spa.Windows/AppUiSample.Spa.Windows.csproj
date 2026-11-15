@@ -25,8 +25,10 @@
 
 	<ItemGroup>
 		<!-- The VPN host, the VPN service's own process, which the service starts beside this executable
-		     at each connect, by the name this assembly records. -->
-		<ProjectReference Include="..\AppUiSample.Spa.Windows.VpnHost\AppUiSample.Spa.Windows.VpnHost.csproj" />
+		     at each connect, by the name this assembly records. It is built and placed beside it, never
+		     compiled against (VhAppVpnHost, VpnHood.AppUi.Hosting.Desktop.Daemon's targets). -->
+		<ProjectReference Include="..\AppUiSample.Spa.Windows.VpnHost\AppUiSample.Spa.Windows.VpnHost.csproj"
+			ReferenceOutputAssembly="false" VhAppVpnHost="true" />
 		<AssemblyMetadata Include="VhAppVpnHostName" Value="VpnHoodSpaSampleVpnHost" />
 	</ItemGroup>
 

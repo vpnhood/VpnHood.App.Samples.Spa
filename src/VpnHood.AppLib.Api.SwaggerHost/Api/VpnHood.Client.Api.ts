@@ -2498,6 +2498,50 @@ export class IntentsClient {
         return Promise.resolve<void>(null as any);
     }
 
+    shareLog( cancelToken?: CancelToken): Promise<void> {
+        let url_ = this.baseUrl + "/api/intents/share-log";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_: AxiosRequestConfig = {
+            method: "POST",
+            url: url_,
+            headers: {
+            },
+            cancelToken
+        };
+
+        return this.instance.request(options_).catch((_error: any) => {
+            if (isAxiosError(_error) && _error.response) {
+                return _error.response;
+            } else {
+                throw _error;
+            }
+        }).then((_response: AxiosResponse) => {
+            return this.processShareLog(_response);
+        });
+    }
+
+    protected processShareLog(response: AxiosResponse): Promise<void> {
+        const status = response.status;
+        let _headers: any = {};
+        if (response.headers && typeof response.headers === "object") {
+            for (const k in response.headers) {
+                if (response.headers.hasOwnProperty(k)) {
+                    _headers[k] = response.headers[k];
+                }
+            }
+        }
+        if (status === 200) {
+            const _responseText = response.data;
+            return Promise.resolve<void>(null as any);
+
+        } else if (status !== 200 && status !== 204) {
+            const _responseText = response.data;
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+        }
+        return Promise.resolve<void>(null as any);
+    }
+
     openAppSettings( cancelToken?: CancelToken): Promise<void> {
         let url_ = this.baseUrl + "/api/intents/open-app-settings";
         url_ = url_.replace(/[?&]$/, "");
@@ -3542,11 +3586,17 @@ export class VpnProfileClient {
     }
 }
 
+/** Represents the signed-in person's account, as the account backend gives it. */
 export class Account implements IAccount {
+    /** Gets or sets the account backend's ID of the person: the account's identity, and the one member always set. */
     userId!: string;
+    /** Gets or sets the person's name, or null. */
     name?: string | null;
+    /** Gets or sets the person's email address, or null where the account's identity carries none. */
     email?: string | null;
+    /** Gets or sets the store subscription that serves the account, or null where none does. */
     subscription?: Subscription | null;
+    /** Gets or sets the premium code the account serves, or null where it serves none. */
     accessCodeInfo?: AccessCodeInfo | null;
 
     constructor(data?: IAccount) {
@@ -3586,22 +3636,41 @@ export class Account implements IAccount {
     }
 }
 
+/** Represents the signed-in person's account, as the account backend gives it. */
 export interface IAccount {
+    /** Gets or sets the account backend's ID of the person: the account's identity, and the one member always set. */
     userId: string;
+    /** Gets or sets the person's name, or null. */
     name?: string | null;
+    /** Gets or sets the person's email address, or null where the account's identity carries none. */
     email?: string | null;
+    /** Gets or sets the store subscription that serves the account, or null where none does. */
     subscription?: Subscription | null;
+    /** Gets or sets the premium code the account serves, or null where it serves none. */
     accessCodeInfo?: AccessCodeInfo | null;
 }
 
+/** Represents the store subscription that serves an account; it is there only where the account has one. */
 export class Subscription implements ISubscription {
+    /** Gets or sets the ID of the store that billed the subscription, as googleplay, appstore or
+microsoft. */
     storeId!: string;
+    /** Gets or sets when the account backend first recorded the subscription, or null. */
     createdTime?: Date | null;
+    /** Gets or sets when the current period ends, or null. */
     expirationTime?: Date | null;
+    /** Gets or sets the last charge the store reported for the subscription, not a list price, or null. */
     priceAmount?: number | null;
+    /** Gets or sets the currency of PriceAmount, or null. */
     priceCurrency?: string | null;
+    /** Gets or sets the period PriceAmount pays for, as an ISO 8601 duration (P1M, P1Y), or
+null. */
     billingPeriod?: string | null;
+    /** Gets or sets a value indicating whether the subscription renews at the period's end, or
+null where that is not known. */
     isAutoRenew?: boolean | null;
+    /** Gets or sets where the subscription can be managed from this device, or why not. The default is
+AnotherStore. */
     management!: SubscriptionManagement;
 
     constructor(data?: ISubscription) {
@@ -3647,25 +3716,42 @@ export class Subscription implements ISubscription {
     }
 }
 
+/** Represents the store subscription that serves an account; it is there only where the account has one. */
 export interface ISubscription {
+    /** Gets or sets the ID of the store that billed the subscription, as googleplay, appstore or
+microsoft. */
     storeId: string;
+    /** Gets or sets when the account backend first recorded the subscription, or null. */
     createdTime?: Date | null;
+    /** Gets or sets when the current period ends, or null. */
     expirationTime?: Date | null;
+    /** Gets or sets the last charge the store reported for the subscription, not a list price, or null. */
     priceAmount?: number | null;
+    /** Gets or sets the currency of PriceAmount, or null. */
     priceCurrency?: string | null;
+    /** Gets or sets the period PriceAmount pays for, as an ISO 8601 duration (P1M, P1Y), or
+null. */
     billingPeriod?: string | null;
+    /** Gets or sets a value indicating whether the subscription renews at the period's end, or
+null where that is not known. */
     isAutoRenew?: boolean | null;
+    /** Gets or sets where the subscription can be managed from this device, or why not. The default is
+AnotherStore. */
     management: SubscriptionManagement;
 }
 
+/** Specifies where a subscription can be managed from this device, to cancel it or change its plan or payment, or why not. */
 export enum SubscriptionManagement {
     AnotherStore = 0,
     NotOnThisDevice = 1,
     Available = 2,
 }
 
+/** Represents the premium code that serves an account. */
 export class AccessCodeInfo implements IAccessCodeInfo {
+    /** Gets or sets the premium code. */
     accessCode!: string;
+    /** Gets or sets when the code expires, where the account backend can tell, or null. */
     expirationTime?: Date | null;
 
     constructor(data?: IAccessCodeInfo) {
@@ -3699,13 +3785,19 @@ export class AccessCodeInfo implements IAccessCodeInfo {
     }
 }
 
+/** Represents the premium code that serves an account. */
 export interface IAccessCodeInfo {
+    /** Gets or sets the premium code. */
     accessCode: string;
+    /** Gets or sets when the code expires, where the account backend can tell, or null. */
     expirationTime?: Date | null;
 }
 
+/** Represents what a sign-in did. */
 export class SignInResult implements ISignInResult {
+    /** Gets where the sign-in stands. */
     state!: SignInState;
+    /** Gets the account's new backup code, after a sign-in that used the old one up, or null. */
     newBackupCode?: string | null;
 
     constructor(data?: ISignInResult) {
@@ -3739,20 +3831,30 @@ export class SignInResult implements ISignInResult {
     }
 }
 
+/** Represents what a sign-in did. */
 export interface ISignInResult {
+    /** Gets where the sign-in stands. */
     state: SignInState;
+    /** Gets the account's new backup code, after a sign-in that used the old one up, or null. */
     newBackupCode?: string | null;
 }
 
+/** Specifies what a sign-in did. */
 export enum SignInState {
     SignedIn = "SignedIn",
     TotpRequired = "TotpRequired",
 }
 
+/** Represents a sign-in: its method, with the credentials or the second step's code. */
 export class SignInOptions implements ISignInOptions {
+    /** Gets the sign-in method, one of AuthProviderIds
+(AuthProviders). */
     providerId!: string;
+    /** Gets the email address, for the password sign-in's first step, or null. */
     userName?: string | null;
+    /** Gets the password, for the password sign-in's first step, or null. */
     password?: string | null;
+    /** Gets the second step's code, the authenticator app's or the account's backup code, or null. */
     twoFactorCode?: string | null;
 
     constructor(data?: ISignInOptions) {
@@ -3790,20 +3892,35 @@ export class SignInOptions implements ISignInOptions {
     }
 }
 
+/** Represents a sign-in: its method, with the credentials or the second step's code. */
 export interface ISignInOptions {
+    /** Gets the sign-in method, one of AuthProviderIds
+(AuthProviders). */
     providerId: string;
+    /** Gets the email address, for the password sign-in's first step, or null. */
     userName?: string | null;
+    /** Gets the password, for the password sign-in's first step, or null. */
     password?: string | null;
+    /** Gets the second step's code, the authenticator app's or the account's backup code, or null. */
     twoFactorCode?: string | null;
 }
 
+/** Represents everything a UI needs to draw itself, in one read: what this build can do, what the app is doing now, what the person chose, and which VPN profiles and languages exist. */
 export class AppInfo implements IAppInfo {
-    features!: AppFeatures;
+    /** Gets what the app is and offers on this device. */
+    descriptor!: AppDescriptor;
+    /** Gets what the UI may ask of the device. */
     intentFeatures!: DeviceIntentFeatures;
+    /** Gets the app's state as it stands. */
     state!: AppState;
+    /** Gets the person's settings. */
     userSettings!: UserSettings;
+    /** Gets the VPN profiles. */
     vpnProfileInfos!: VpnProfileInfo[];
+    /** Gets the languages the UI offers. */
     availableCultureInfos!: UiCultureInfo[];
+    /** Gets or sets a value indicating whether this client is another device on the local network rather than the app
+itself; the web host sets it, as only the request knows where it came from. */
     isRemote!: boolean;
 
     constructor(data?: IAppInfo) {
@@ -3814,7 +3931,7 @@ export class AppInfo implements IAppInfo {
             }
         }
         if (!data) {
-            this.features = new AppFeatures();
+            this.descriptor = new AppDescriptor();
             this.intentFeatures = new DeviceIntentFeatures();
             this.state = new AppState();
             this.userSettings = new UserSettings();
@@ -3825,7 +3942,7 @@ export class AppInfo implements IAppInfo {
 
     init(_data?: any) {
         if (_data) {
-            this.features = _data["features"] ? AppFeatures.fromJS(_data["features"]) : new AppFeatures();
+            this.descriptor = _data["descriptor"] ? AppDescriptor.fromJS(_data["descriptor"]) : new AppDescriptor();
             this.intentFeatures = _data["intentFeatures"] ? DeviceIntentFeatures.fromJS(_data["intentFeatures"]) : new DeviceIntentFeatures();
             this.state = _data["state"] ? AppState.fromJS(_data["state"]) : new AppState();
             this.userSettings = _data["userSettings"] ? UserSettings.fromJS(_data["userSettings"]) : new UserSettings();
@@ -3858,7 +3975,7 @@ export class AppInfo implements IAppInfo {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["features"] = this.features ? this.features.toJSON() : null as any;
+        data["descriptor"] = this.descriptor ? this.descriptor.toJSON() : null as any;
         data["intentFeatures"] = this.intentFeatures ? this.intentFeatures.toJSON() : null as any;
         data["state"] = this.state ? this.state.toJSON() : null as any;
         data["userSettings"] = this.userSettings ? this.userSettings.toJSON() : null as any;
@@ -3877,57 +3994,113 @@ export class AppInfo implements IAppInfo {
     }
 }
 
+/** Represents everything a UI needs to draw itself, in one read: what this build can do, what the app is doing now, what the person chose, and which VPN profiles and languages exist. */
 export interface IAppInfo {
-    features: AppFeatures;
+    /** Gets what the app is and offers on this device. */
+    descriptor: AppDescriptor;
+    /** Gets what the UI may ask of the device. */
     intentFeatures: DeviceIntentFeatures;
+    /** Gets the app's state as it stands. */
     state: AppState;
+    /** Gets the person's settings. */
     userSettings: UserSettings;
+    /** Gets the VPN profiles. */
     vpnProfileInfos: VpnProfileInfo[];
+    /** Gets the languages the UI offers. */
     availableCultureInfos: UiCultureInfo[];
+    /** Gets or sets a value indicating whether this client is another device on the local network rather than the app
+itself; the web host sets it, as only the request knows where it came from. */
     isRemote: boolean;
 }
 
-export class AppFeatures implements IAppFeatures {
+/** Represents what the app is and offers on this device: its identity, its features and its links, which the UI reads once. */
+export class AppDescriptor implements IAppDescriptor {
+    /** Gets the app's ID, as the head names it, which the client's ID is made from. */
     appId!: string;
+    /** Gets the app's name. */
     appName!: string;
+    /** Gets the name without spaces that the release files, a desktop executable and its service, and the VPN adapter are called by. */
     packageTitle!: string;
+    /** Gets the maker's name, for a document that names it ({companyName}) as AppName is {appName}. */
     companyName!: string;
+    /** Gets a value indicating whether the split tunneling by app can exclude apps on this device. */
     isExcludeAppsSupported!: boolean;
+    /** Gets a value indicating whether the split tunneling by app can include apps on this device. */
     isIncludeAppsSupported!: boolean;
+    /** Gets the theme's name, as blue or violet, which picks the UI's palette and its theme folder in the UI's store. */
     uiTheme!: string;
+    /** Gets a value indicating whether the person may add an access key. */
     isAddAccessKeySupported!: boolean;
+    /** Gets this build's premium tier, or null where the product has none. */
     premium!: AppPremiumOptions | null;
+    /** Gets a value indicating whether the app has an account backend, with its sign-in. */
     isAccountSupported!: boolean;
+    /** Gets a value indicating whether the app has in-app purchasing. */
     isBillingSupported!: boolean;
+    /** Gets the IDs of the sign-in methods the app offers (AuthProviders), as its
+account backend declares them; none where it has no account backend. */
     authProviderIds!: string[];
+    /** Gets a value indicating whether the person must accept the license agreement first. */
     isLicenseAgreementRequired!: boolean;
+    /** Gets the app's links; a null link is one the UI hides. */
     links!: AppLinks;
+    /** Gets a value indicating whether the UI shows that the app is powered by VpnHood. */
     showPoweredBy!: boolean;
+    /** Gets the path of the logo in the UI's store. */
     logoAssetPath!: string;
+    /** Gets the name of the privacy consent's document in the UI's store, which the UI completes per language. */
     privacyConsentAssetName!: string;
+    /** Gets a value indicating whether the app's VPN can use QUIC on this device. */
     isQuicSupported!: boolean;
+    /** Gets how the app supports always-on VPN on this device. */
     alwaysOnSupport!: AlwaysOnSupport;
+    /** Gets a value indicating whether the app keeps a kill switch of its own, as a desktop's
+(KillSwitch). */
     isKillSwitchSupported!: boolean;
+    /** Gets the path of the installer's script that lifts the kill switch's block with neither the service nor the app,
+which Linux's Kill Switch page prints as a command; null outside an install, and on Windows,
+whose page names the Start menu's entry. */
     killSwitchOffScriptPath!: string | null;
+    /** Gets a value indicating whether the settings turn the automatic update on and off, as a desktop's own updater
+does (GetAutomaticUpdate); a store keeps its own setting. */
     isAutomaticUpdateSupported!: boolean;
+    /** Gets a value indicating whether this build has the IP-location data a split by country needs; without it, a
+country mode fails the connect, so the UI hides it. */
     isSplitCountrySupported!: boolean;
+    /** Gets a value indicating whether the app has a store review to ask for. */
     isUserReviewSupported!: boolean;
+    /** Gets a value indicating whether this build collects anonymous data at all: usage events, and the crash reports
+that go with them where the tracker reports crashes. */
     isAnonymousTrackerSupported!: boolean;
+    /** Gets or sets a value indicating whether the device is a TV, which the UI is drawn for. */
     isTv!: boolean;
+    /** Gets the operating system the app runs on. */
     osType!: AppOsType;
+    /** Gets the client's ID, made from the app's ID and the device's or the install's own. */
     clientId!: string;
+    /** Gets a value indicating whether the app runs in its debug mode. */
     isDebugMode!: boolean;
+    /** Gets the debug commands the app knows. */
     debugCommands!: string[];
+    /** Gets a value indicating whether the app's VPN can reach its server through proxies. */
     isProxySupported!: boolean;
+    /** Gets a value indicating whether the app has a listener a phone can pair with; without it, the remote access's
+calls throw, so the UI hides the pairing. */
     isRemoteAccessSupported!: boolean;
+    /** Gets a value indicating whether the settings may choose how a server's addresses are ordered (EndPointStrategy). */
     allowEndPointStrategy!: boolean;
+    /** Gets or sets a value indicating whether the app shows ads. */
     isAdSupported!: boolean;
+    /** Gets a value indicating whether the app has rewarded ads. */
     isRewardedAdSupported!: boolean;
+    /** Gets the channel protocols the app's VPN can use on this device. */
     channelProtocols!: ChannelProtocol[];
+    /** Gets the JSON the head hands the UI uninterpreted, as a product's own settings, or null. */
     customData!: any | null;
+    /** Gets the app's version. */
     version!: string;
 
-    constructor(data?: IAppFeatures) {
+    constructor(data?: IAppDescriptor) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4006,9 +4179,9 @@ export class AppFeatures implements IAppFeatures {
         }
     }
 
-    static fromJS(data: any): AppFeatures {
+    static fromJS(data: any): AppDescriptor {
         data = typeof data === 'object' ? data : {};
-        let result = new AppFeatures();
+        let result = new AppDescriptor();
         result.init(data);
         return result;
     }
@@ -4069,50 +4242,103 @@ export class AppFeatures implements IAppFeatures {
     }
 }
 
-export interface IAppFeatures {
+/** Represents what the app is and offers on this device: its identity, its features and its links, which the UI reads once. */
+export interface IAppDescriptor {
+    /** Gets the app's ID, as the head names it, which the client's ID is made from. */
     appId: string;
+    /** Gets the app's name. */
     appName: string;
+    /** Gets the name without spaces that the release files, a desktop executable and its service, and the VPN adapter are called by. */
     packageTitle: string;
+    /** Gets the maker's name, for a document that names it ({companyName}) as AppName is {appName}. */
     companyName: string;
+    /** Gets a value indicating whether the split tunneling by app can exclude apps on this device. */
     isExcludeAppsSupported: boolean;
+    /** Gets a value indicating whether the split tunneling by app can include apps on this device. */
     isIncludeAppsSupported: boolean;
+    /** Gets the theme's name, as blue or violet, which picks the UI's palette and its theme folder in the UI's store. */
     uiTheme: string;
+    /** Gets a value indicating whether the person may add an access key. */
     isAddAccessKeySupported: boolean;
+    /** Gets this build's premium tier, or null where the product has none. */
     premium: AppPremiumOptions | null;
+    /** Gets a value indicating whether the app has an account backend, with its sign-in. */
     isAccountSupported: boolean;
+    /** Gets a value indicating whether the app has in-app purchasing. */
     isBillingSupported: boolean;
+    /** Gets the IDs of the sign-in methods the app offers (AuthProviders), as its
+account backend declares them; none where it has no account backend. */
     authProviderIds: string[];
+    /** Gets a value indicating whether the person must accept the license agreement first. */
     isLicenseAgreementRequired: boolean;
+    /** Gets the app's links; a null link is one the UI hides. */
     links: AppLinks;
+    /** Gets a value indicating whether the UI shows that the app is powered by VpnHood. */
     showPoweredBy: boolean;
+    /** Gets the path of the logo in the UI's store. */
     logoAssetPath: string;
+    /** Gets the name of the privacy consent's document in the UI's store, which the UI completes per language. */
     privacyConsentAssetName: string;
+    /** Gets a value indicating whether the app's VPN can use QUIC on this device. */
     isQuicSupported: boolean;
+    /** Gets how the app supports always-on VPN on this device. */
     alwaysOnSupport: AlwaysOnSupport;
+    /** Gets a value indicating whether the app keeps a kill switch of its own, as a desktop's
+(KillSwitch). */
     isKillSwitchSupported: boolean;
+    /** Gets the path of the installer's script that lifts the kill switch's block with neither the service nor the app,
+which Linux's Kill Switch page prints as a command; null outside an install, and on Windows,
+whose page names the Start menu's entry. */
     killSwitchOffScriptPath: string | null;
+    /** Gets a value indicating whether the settings turn the automatic update on and off, as a desktop's own updater
+does (GetAutomaticUpdate); a store keeps its own setting. */
     isAutomaticUpdateSupported: boolean;
+    /** Gets a value indicating whether this build has the IP-location data a split by country needs; without it, a
+country mode fails the connect, so the UI hides it. */
     isSplitCountrySupported: boolean;
+    /** Gets a value indicating whether the app has a store review to ask for. */
     isUserReviewSupported: boolean;
+    /** Gets a value indicating whether this build collects anonymous data at all: usage events, and the crash reports
+that go with them where the tracker reports crashes. */
     isAnonymousTrackerSupported: boolean;
+    /** Gets or sets a value indicating whether the device is a TV, which the UI is drawn for. */
     isTv: boolean;
+    /** Gets the operating system the app runs on. */
     osType: AppOsType;
+    /** Gets the client's ID, made from the app's ID and the device's or the install's own. */
     clientId: string;
+    /** Gets a value indicating whether the app runs in its debug mode. */
     isDebugMode: boolean;
+    /** Gets the debug commands the app knows. */
     debugCommands: string[];
+    /** Gets a value indicating whether the app's VPN can reach its server through proxies. */
     isProxySupported: boolean;
+    /** Gets a value indicating whether the app has a listener a phone can pair with; without it, the remote access's
+calls throw, so the UI hides the pairing. */
     isRemoteAccessSupported: boolean;
+    /** Gets a value indicating whether the settings may choose how a server's addresses are ordered (EndPointStrategy). */
     allowEndPointStrategy: boolean;
+    /** Gets or sets a value indicating whether the app shows ads. */
     isAdSupported: boolean;
+    /** Gets a value indicating whether the app has rewarded ads. */
     isRewardedAdSupported: boolean;
+    /** Gets the channel protocols the app's VPN can use on this device. */
     channelProtocols: ChannelProtocol[];
+    /** Gets the JSON the head hands the UI uninterpreted, as a product's own settings, or null. */
     customData: any | null;
+    /** Gets the app's version. */
     version: string;
 }
 
+/** Represents a build's premium tier, set only where the product has one. */
 export class AppPremiumOptions implements IAppPremiumOptions {
+    /** Gets the features this build sells: one listed is for premium profiles only, and one not listed is free for
+everyone. The default is none. */
     features!: AppFeature[];
+    /** Gets a value indicating whether this build takes a typed premium code. The default is false. */
     allowImportAccessCode!: boolean;
+    /** Gets a value indicating whether this build may send a buyer to a shop outside the app. The default is
+false. */
     isPurchaseUrlSupported!: boolean;
 
     constructor(data?: IAppPremiumOptions) {
@@ -4162,12 +4388,19 @@ export class AppPremiumOptions implements IAppPremiumOptions {
     }
 }
 
+/** Represents a build's premium tier, set only where the product has one. */
 export interface IAppPremiumOptions {
+    /** Gets the features this build sells: one listed is for premium profiles only, and one not listed is free for
+everyone. The default is none. */
     features: AppFeature[];
+    /** Gets a value indicating whether this build takes a typed premium code. The default is false. */
     allowImportAccessCode: boolean;
+    /** Gets a value indicating whether this build may send a buyer to a shop outside the app. The default is
+false. */
     isPurchaseUrlSupported: boolean;
 }
 
+/** Specifies a feature of the app, which its premium tier may keep for premium. */
 export enum AppFeature {
     QuickLaunch = "QuickLaunch",
     AlwaysOn = "AlwaysOn",
@@ -4179,15 +4412,25 @@ export enum AppFeature {
     SplitCountry = "SplitCountry",
 }
 
+/** Represents the pages this build links to, from the product's settings; a null page is one the build has not, whose link the UI hides. */
 export class AppLinks implements IAppLinks {
+    /** Gets the privacy policy, linked from the paywall, the privacy settings, the first-run screen and the menu. */
     privacyPolicy?: string | null;
+    /** Gets the terms of use, linked from the paywall and the first-run screen. */
     termsOfUse?: string | null;
+    /** Gets the product's website, linked from the menu. */
     website?: string | null;
+    /** Gets the page of what is new, linked from the menu. */
     whatsNew?: string | null;
+    /** Gets where to send feedback, linked from the menu. */
     feedback?: string | null;
+    /** Gets the guide to a server of one's own, linked from the menu where access keys can be added (IsAddAccessKeySupported). */
     personalServer?: string | null;
+    /** Gets the product's LinkedIn page, linked from the menu. */
     linkedIn?: string | null;
+    /** Gets the product's Instagram page, linked from the menu. */
     instagram?: string | null;
+    /** Gets the product's X page, linked from the menu. */
     x?: string | null;
 
     constructor(data?: IAppLinks) {
@@ -4235,24 +4478,36 @@ export class AppLinks implements IAppLinks {
     }
 }
 
+/** Represents the pages this build links to, from the product's settings; a null page is one the build has not, whose link the UI hides. */
 export interface IAppLinks {
+    /** Gets the privacy policy, linked from the paywall, the privacy settings, the first-run screen and the menu. */
     privacyPolicy?: string | null;
+    /** Gets the terms of use, linked from the paywall and the first-run screen. */
     termsOfUse?: string | null;
+    /** Gets the product's website, linked from the menu. */
     website?: string | null;
+    /** Gets the page of what is new, linked from the menu. */
     whatsNew?: string | null;
+    /** Gets where to send feedback, linked from the menu. */
     feedback?: string | null;
+    /** Gets the guide to a server of one's own, linked from the menu where access keys can be added (IsAddAccessKeySupported). */
     personalServer?: string | null;
+    /** Gets the product's LinkedIn page, linked from the menu. */
     linkedIn?: string | null;
+    /** Gets the product's Instagram page, linked from the menu. */
     instagram?: string | null;
+    /** Gets the product's X page, linked from the menu. */
     x?: string | null;
 }
 
+/** Specifies who keeps the VPN on at all times on this device. */
 export enum AlwaysOnSupport {
     None = "None",
     Device = "Device",
     App = "App",
 }
 
+/** Specifies the operating system the app runs on. */
 export enum AppOsType {
     Unknown = "Unknown",
     Windows = "Windows",
@@ -4262,23 +4517,37 @@ export enum AppOsType {
     MacOs = "MacOs",
 }
 
+/** Specifies the protocol of the tunnel's packet channels. */
 export enum ChannelProtocol {
     Quic = "Quic",
     Udp = "Udp",
     Tcp = "Tcp",
 }
 
+/** Represents what the UI may ask of the device, read off the device once and carried as plain values, as a UI across the API has no device to ask. */
 export class DeviceIntentFeatures implements IDeviceIntentFeatures {
+    /** Gets a value indicating whether a store's review can be asked for. */
     isUserReviewSupported!: boolean;
+    /** Gets a value indicating whether a link may be handed to an external browser, as the account website or a web purchase page. */
     isWebBrowserSupported!: boolean;
+    /** Gets a value indicating whether the device offers the app's Quick Launch. */
     isQuickLaunchSupported!: boolean;
+    /** Gets a value indicating whether the app can ask the system to add its Quick Launch. */
     isRequestQuickLaunchSupported!: boolean;
+    /** Gets a value indicating whether the app can ask the person to let it show notifications. */
     isRequestNotificationSupported!: boolean;
+    /** Gets a value indicating whether the device has a private DNS setting, which can take the DNS past the VPN. */
     isPrivateDnsSettingsSupported!: boolean;
+    /** Gets a value indicating whether the app can open the system's kill switch setting. */
     isKillSwitchSettingsSupported!: boolean;
+    /** Gets a value indicating whether the app can open the system's settings. */
     isSettingsSupported!: boolean;
+    /** Gets a value indicating whether the app can open its own page in the system's settings. */
     isAppSettingsSupported!: boolean;
+    /** Gets a value indicating whether the app can open its notification settings in the system's settings. */
     isAppNotificationSettingsSupported!: boolean;
+    /** Gets a value indicating whether the device has a share sheet. */
+    isShareSupported!: boolean;
 
     constructor(data?: IDeviceIntentFeatures) {
         if (data) {
@@ -4301,6 +4570,7 @@ export class DeviceIntentFeatures implements IDeviceIntentFeatures {
             this.isSettingsSupported = _data["isSettingsSupported"] !== undefined ? _data["isSettingsSupported"] : null as any;
             this.isAppSettingsSupported = _data["isAppSettingsSupported"] !== undefined ? _data["isAppSettingsSupported"] : null as any;
             this.isAppNotificationSettingsSupported = _data["isAppNotificationSettingsSupported"] !== undefined ? _data["isAppNotificationSettingsSupported"] : null as any;
+            this.isShareSupported = _data["isShareSupported"] !== undefined ? _data["isShareSupported"] : null as any;
         }
     }
 
@@ -4323,62 +4593,119 @@ export class DeviceIntentFeatures implements IDeviceIntentFeatures {
         data["isSettingsSupported"] = this.isSettingsSupported !== undefined ? this.isSettingsSupported : null as any;
         data["isAppSettingsSupported"] = this.isAppSettingsSupported !== undefined ? this.isAppSettingsSupported : null as any;
         data["isAppNotificationSettingsSupported"] = this.isAppNotificationSettingsSupported !== undefined ? this.isAppNotificationSettingsSupported : null as any;
+        data["isShareSupported"] = this.isShareSupported !== undefined ? this.isShareSupported : null as any;
         return data;
     }
 }
 
+/** Represents what the UI may ask of the device, read off the device once and carried as plain values, as a UI across the API has no device to ask. */
 export interface IDeviceIntentFeatures {
+    /** Gets a value indicating whether a store's review can be asked for. */
     isUserReviewSupported: boolean;
+    /** Gets a value indicating whether a link may be handed to an external browser, as the account website or a web purchase page. */
     isWebBrowserSupported: boolean;
+    /** Gets a value indicating whether the device offers the app's Quick Launch. */
     isQuickLaunchSupported: boolean;
+    /** Gets a value indicating whether the app can ask the system to add its Quick Launch. */
     isRequestQuickLaunchSupported: boolean;
+    /** Gets a value indicating whether the app can ask the person to let it show notifications. */
     isRequestNotificationSupported: boolean;
+    /** Gets a value indicating whether the device has a private DNS setting, which can take the DNS past the VPN. */
     isPrivateDnsSettingsSupported: boolean;
+    /** Gets a value indicating whether the app can open the system's kill switch setting. */
     isKillSwitchSettingsSupported: boolean;
+    /** Gets a value indicating whether the app can open the system's settings. */
     isSettingsSupported: boolean;
+    /** Gets a value indicating whether the app can open its own page in the system's settings. */
     isAppSettingsSupported: boolean;
+    /** Gets a value indicating whether the app can open its notification settings in the system's settings. */
     isAppNotificationSettingsSupported: boolean;
+    /** Gets a value indicating whether the device has a share sheet. */
+    isShareSupported: boolean;
 }
 
+/** Represents the app's state as it stands, which the UI polls to refresh. */
 export class AppState implements IAppState {
+    /** Gets when the app's settings last changed, which tells the UI to read them again. */
     configTime!: Date;
+    /** Gets when the account last changed, from any UI, or null where the build has no accounts (IsAccountSupported). */
+    accountTime!: Date | null;
+    /** Gets where the VPN's connection stands. */
     connectionState!: AppConnectionState;
+    /** Gets the session's information, or null while the app is idle. */
     sessionInfo!: AppSessionInfo | null;
+    /** Gets the session's status, or null while the app is idle. */
     sessionStatus!: AppSessionStatus | null;
+    /** Gets the status of the proxies the last connection reached its server through, or null. */
     proxyConnectorStatus!: AppProxyConnectorStatus | null;
+    /** Gets the session's server location, or, while idle, the one the current VPN profile has chosen, or null. */
     serverLocationInfo!: CurrentServerLocationInfo | null;
+    /** Gets when the person last asked to connect, or null. */
     connectRequestTime!: Date | null;
+    /** Gets the last error, until it is cleared, or null. */
     lastError!: ApiError | null;
+    /** Gets the current VPN profile, or null where none is chosen. */
     vpnProfile!: VpnProfileBaseInfo | null;
+    /** Gets a value indicating whether the app is idle: neither connecting, connected nor disconnecting. */
     isIdle!: boolean;
+    /** Gets a value indicating whether the UI should offer the log: the app is idle after a diagnose, and a log exists. */
     promptForLog!: boolean;
+    /** Gets a value indicating whether the app has a log. */
     logExists!: boolean;
+    /** Gets a value indicating whether the last connect was a diagnose, until the last error is cleared. */
     hasDiagnoseRequested!: boolean;
+    /** Gets a value indicating whether a changed setting needs a reconnect to apply, until the person clears it, connects or disconnects. */
     isReconnectRequired!: boolean;
+    /** Gets the updater's status, or null where the app has no updater. */
     updaterStatus!: AppUpdaterStatus | null;
+    /** Gets a value indicating whether the UI may offer Disconnect now. */
     canDisconnect!: boolean;
+    /** Gets a value indicating whether the UI may offer Connect now. */
     canConnect!: boolean;
+    /** Gets a value indicating whether the UI may offer Diagnose now. */
     canDiagnose!: boolean;
+    /** Gets the review the server recommends asking for after the last disconnect, or 0 where none is; a recorded review or a new connect sets it back to 0. */
     userReviewRecommended!: number;
+    /** Gets a value indicating whether the UI should offer the Quick Launch, which the person has not been asked about yet. */
     isQuickLaunchRecommended!: boolean;
+    /** Gets a value indicating whether the first-run page must ask the person about the anonymous usage data first. */
     isAnonymousTrackerPromptRequired!: boolean;
+    /** Gets the client's country code: the country the server last reported for the client, else the device's region's; or
+null for a region that is no country, as 419. */
     clientCountryCode!: string | null;
+    /** Gets the language the app's UI uses now. */
     currentUiCultureInfo!: UiCultureInfo;
+    /** Gets the system's language. */
     systemUiCultureInfo!: UiCultureInfo;
+    /** Gets where the in-app purchase stands, or null where the app has no billing. */
     purchaseState!: PurchaseState | null;
+    /** Gets the heights of the system bars over the app's window; none where no window is open. */
     systemBarsInfo!: SystemBarsInfo;
+    /** Gets a value indicating whether the app may show notifications, or null where the device does not say. */
     isNotificationEnabled!: boolean | null;
+    /** Gets the device's private DNS, or null where the device cannot tell it. */
     systemPrivateDns!: PrivateDns | null;
+    /** Gets or sets a value indicating whether the app waits for the UI's own ad to end. */
     isWaitingForInternalAd!: boolean | null;
+    /** Gets a value indicating whether the privacy settings must offer the ad consent's form again, for the person to change their answer. */
     isAdPrivacyOptionsRequired!: boolean;
+    /** Gets the progress of a long connect step, in percent, as the ad's load while the app waits for one, or null. */
     stateProgress!: number | null;
+    /** Gets or sets a value indicating whether a diagnose is under way. */
     isDiagnosing!: boolean;
+    /** Gets the protocol of the session's channel, or, while idle, the settings' one. */
     channelProtocol!: ChannelProtocol;
+    /** Gets a value indicating whether the settings' proxy mode has a proxy to use: the device's proxy where it has one, or the person's list where it is not empty. */
     isProxyEndPointActive!: boolean;
+    /** Gets a value indicating whether the app has a promotion to show: its image is saved, the remote settings' promotion is on, and the current VPN profile is not premium; never in China. */
     promotionExists!: boolean;
-    tcpProxyUsageReason!: TcpProxyUsageReason;
+    /** Gets why the TCP forwarding switch is locked, if it is. */
+    tcpForwardingLockReason!: TcpForwardingLockReason;
+    /** Gets the split tunneling's state, as the settings and the session make it. */
     splitTunnelingState!: SplitTunnelingState;
+    /** Gets the always-on state, or null where the app does not keep always-on itself (AlwaysOnSupport). */
     alwaysOnState!: AlwaysOnState | null;
+    /** Gets a value indicating whether the app's kill switch blocks the internet with no session, but for the device-level split. */
     isKillSwitchBlocking!: boolean;
 
     constructor(data?: IAppState) {
@@ -4399,6 +4726,7 @@ export class AppState implements IAppState {
     init(_data?: any) {
         if (_data) {
             this.configTime = _data["configTime"] ? new Date(_data["configTime"].toString()) : null as any;
+            this.accountTime = _data["accountTime"] ? new Date(_data["accountTime"].toString()) : null as any;
             this.connectionState = _data["connectionState"] !== undefined ? _data["connectionState"] : null as any;
             this.sessionInfo = _data["sessionInfo"] ? AppSessionInfo.fromJS(_data["sessionInfo"]) : null as any;
             this.sessionStatus = _data["sessionStatus"] ? AppSessionStatus.fromJS(_data["sessionStatus"]) : null as any;
@@ -4433,7 +4761,7 @@ export class AppState implements IAppState {
             this.channelProtocol = _data["channelProtocol"] !== undefined ? _data["channelProtocol"] : null as any;
             this.isProxyEndPointActive = _data["isProxyEndPointActive"] !== undefined ? _data["isProxyEndPointActive"] : null as any;
             this.promotionExists = _data["promotionExists"] !== undefined ? _data["promotionExists"] : null as any;
-            this.tcpProxyUsageReason = _data["tcpProxyUsageReason"] !== undefined ? _data["tcpProxyUsageReason"] : null as any;
+            this.tcpForwardingLockReason = _data["tcpForwardingLockReason"] !== undefined ? _data["tcpForwardingLockReason"] : null as any;
             this.splitTunnelingState = _data["splitTunnelingState"] ? SplitTunnelingState.fromJS(_data["splitTunnelingState"]) : new SplitTunnelingState();
             this.alwaysOnState = _data["alwaysOnState"] ? AlwaysOnState.fromJS(_data["alwaysOnState"]) : null as any;
             this.isKillSwitchBlocking = _data["isKillSwitchBlocking"] !== undefined ? _data["isKillSwitchBlocking"] : null as any;
@@ -4450,6 +4778,7 @@ export class AppState implements IAppState {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["configTime"] = this.configTime ? this.configTime.toISOString() : null as any;
+        data["accountTime"] = this.accountTime ? this.accountTime.toISOString() : null as any;
         data["connectionState"] = this.connectionState !== undefined ? this.connectionState : null as any;
         data["sessionInfo"] = this.sessionInfo ? this.sessionInfo.toJSON() : null as any;
         data["sessionStatus"] = this.sessionStatus ? this.sessionStatus.toJSON() : null as any;
@@ -4484,7 +4813,7 @@ export class AppState implements IAppState {
         data["channelProtocol"] = this.channelProtocol !== undefined ? this.channelProtocol : null as any;
         data["isProxyEndPointActive"] = this.isProxyEndPointActive !== undefined ? this.isProxyEndPointActive : null as any;
         data["promotionExists"] = this.promotionExists !== undefined ? this.promotionExists : null as any;
-        data["tcpProxyUsageReason"] = this.tcpProxyUsageReason !== undefined ? this.tcpProxyUsageReason : null as any;
+        data["tcpForwardingLockReason"] = this.tcpForwardingLockReason !== undefined ? this.tcpForwardingLockReason : null as any;
         data["splitTunnelingState"] = this.splitTunnelingState ? this.splitTunnelingState.toJSON() : null as any;
         data["alwaysOnState"] = this.alwaysOnState ? this.alwaysOnState.toJSON() : null as any;
         data["isKillSwitchBlocking"] = this.isKillSwitchBlocking !== undefined ? this.isKillSwitchBlocking : null as any;
@@ -4492,48 +4821,92 @@ export class AppState implements IAppState {
     }
 }
 
+/** Represents the app's state as it stands, which the UI polls to refresh. */
 export interface IAppState {
+    /** Gets when the app's settings last changed, which tells the UI to read them again. */
     configTime: Date;
+    /** Gets when the account last changed, from any UI, or null where the build has no accounts (IsAccountSupported). */
+    accountTime: Date | null;
+    /** Gets where the VPN's connection stands. */
     connectionState: AppConnectionState;
+    /** Gets the session's information, or null while the app is idle. */
     sessionInfo: AppSessionInfo | null;
+    /** Gets the session's status, or null while the app is idle. */
     sessionStatus: AppSessionStatus | null;
+    /** Gets the status of the proxies the last connection reached its server through, or null. */
     proxyConnectorStatus: AppProxyConnectorStatus | null;
+    /** Gets the session's server location, or, while idle, the one the current VPN profile has chosen, or null. */
     serverLocationInfo: CurrentServerLocationInfo | null;
+    /** Gets when the person last asked to connect, or null. */
     connectRequestTime: Date | null;
+    /** Gets the last error, until it is cleared, or null. */
     lastError: ApiError | null;
+    /** Gets the current VPN profile, or null where none is chosen. */
     vpnProfile: VpnProfileBaseInfo | null;
+    /** Gets a value indicating whether the app is idle: neither connecting, connected nor disconnecting. */
     isIdle: boolean;
+    /** Gets a value indicating whether the UI should offer the log: the app is idle after a diagnose, and a log exists. */
     promptForLog: boolean;
+    /** Gets a value indicating whether the app has a log. */
     logExists: boolean;
+    /** Gets a value indicating whether the last connect was a diagnose, until the last error is cleared. */
     hasDiagnoseRequested: boolean;
+    /** Gets a value indicating whether a changed setting needs a reconnect to apply, until the person clears it, connects or disconnects. */
     isReconnectRequired: boolean;
+    /** Gets the updater's status, or null where the app has no updater. */
     updaterStatus: AppUpdaterStatus | null;
+    /** Gets a value indicating whether the UI may offer Disconnect now. */
     canDisconnect: boolean;
+    /** Gets a value indicating whether the UI may offer Connect now. */
     canConnect: boolean;
+    /** Gets a value indicating whether the UI may offer Diagnose now. */
     canDiagnose: boolean;
+    /** Gets the review the server recommends asking for after the last disconnect, or 0 where none is; a recorded review or a new connect sets it back to 0. */
     userReviewRecommended: number;
+    /** Gets a value indicating whether the UI should offer the Quick Launch, which the person has not been asked about yet. */
     isQuickLaunchRecommended: boolean;
+    /** Gets a value indicating whether the first-run page must ask the person about the anonymous usage data first. */
     isAnonymousTrackerPromptRequired: boolean;
+    /** Gets the client's country code: the country the server last reported for the client, else the device's region's; or
+null for a region that is no country, as 419. */
     clientCountryCode: string | null;
+    /** Gets the language the app's UI uses now. */
     currentUiCultureInfo: UiCultureInfo;
+    /** Gets the system's language. */
     systemUiCultureInfo: UiCultureInfo;
+    /** Gets where the in-app purchase stands, or null where the app has no billing. */
     purchaseState: PurchaseState | null;
+    /** Gets the heights of the system bars over the app's window; none where no window is open. */
     systemBarsInfo: SystemBarsInfo;
+    /** Gets a value indicating whether the app may show notifications, or null where the device does not say. */
     isNotificationEnabled: boolean | null;
+    /** Gets the device's private DNS, or null where the device cannot tell it. */
     systemPrivateDns: PrivateDns | null;
+    /** Gets or sets a value indicating whether the app waits for the UI's own ad to end. */
     isWaitingForInternalAd: boolean | null;
+    /** Gets a value indicating whether the privacy settings must offer the ad consent's form again, for the person to change their answer. */
     isAdPrivacyOptionsRequired: boolean;
+    /** Gets the progress of a long connect step, in percent, as the ad's load while the app waits for one, or null. */
     stateProgress: number | null;
+    /** Gets or sets a value indicating whether a diagnose is under way. */
     isDiagnosing: boolean;
+    /** Gets the protocol of the session's channel, or, while idle, the settings' one. */
     channelProtocol: ChannelProtocol;
+    /** Gets a value indicating whether the settings' proxy mode has a proxy to use: the device's proxy where it has one, or the person's list where it is not empty. */
     isProxyEndPointActive: boolean;
+    /** Gets a value indicating whether the app has a promotion to show: its image is saved, the remote settings' promotion is on, and the current VPN profile is not premium; never in China. */
     promotionExists: boolean;
-    tcpProxyUsageReason: TcpProxyUsageReason;
+    /** Gets why the TCP forwarding switch is locked, if it is. */
+    tcpForwardingLockReason: TcpForwardingLockReason;
+    /** Gets the split tunneling's state, as the settings and the session make it. */
     splitTunnelingState: SplitTunnelingState;
+    /** Gets the always-on state, or null where the app does not keep always-on itself (AlwaysOnSupport). */
     alwaysOnState: AlwaysOnState | null;
+    /** Gets a value indicating whether the app's kill switch blocks the internet with no session, but for the device-level split. */
     isKillSwitchBlocking: boolean;
 }
 
+/** Specifies where the VPN's connection stands, as the app shows it. */
 export enum AppConnectionState {
     None = "None",
     Initializing = "Initializing",
@@ -4551,22 +4924,42 @@ export enum AppConnectionState {
     Updating = "Updating",
 }
 
+/** Represents a VPN session as its server set it up. */
 export class AppSessionInfo implements IAppSessionInfo {
+    /** Gets the access's terms and state, as its access manager reports them, or null. */
     accessInfo!: AccessInfo | null;
+    /** Gets the session's DNS: its servers, where they came from, and whether the tunnel carries them. */
     dnsConfig!: DnsConfig;
+    /** Gets or sets a value indicating whether the server lets the client reach the local networks. */
     isLocalNetworkAllowed!: boolean;
+    /** Gets a value indicating whether the server's own configuration leaves public destinations outside the tunnel. */
     isTrafficSplitByServer!: boolean;
+    /** Gets a value indicating whether the server carries IPv6; when not, the client blocks or bypasses IPv6 as
+the split tunneling's settings say. */
     isIpV6SupportedByServer!: boolean;
+    /** Gets the server's location, or null. */
     serverLocationInfo!: CurrentServerLocationInfo | null;
+    /** Gets a value indicating whether the session is premium. */
     isPremiumSession!: boolean;
+    /** Gets whose session this one took the place of, if any. */
     suppressedTo!: SessionSuppressType;
+    /** Gets the server's version. */
     serverVersion!: string;
+    /** Gets the client's public IP address as the server sees it. */
     clientPublicIpAddress!: string;
+    /** Gets or sets when the session was made, in UTC. */
     createdTime!: Date;
+    /** Gets the protocols the session's packet channels can use, by what the server takes and this device can make. */
     channelProtocols!: ChannelProtocol[];
-    isTcpProxySupported!: boolean;
+    /** Gets a value indicating whether the server forwards TCP connections the client ends on the device. */
+    isTcpForwardingSupported!: boolean;
+    /** Gets a value indicating whether the server takes TCP as packets over IPv4, which the TCP forwarding switch needs. */
     isTcpPacketSupported!: boolean;
+    /** Gets a value indicating whether the server carries the device's QUIC; where it does not, the client drops it as
+DropQuic does, whatever that says, while it forwards IPv4 TCP. */
     isQuicPacketSupported!: boolean;
+    /** Gets a value indicating whether the server carries the device's UDP; where it does not, the client drops it as
+DropUdp does, whatever that says, while it forwards IPv4 TCP. */
     isUdpPacketSupported!: boolean;
 
     constructor(data?: IAppSessionInfo) {
@@ -4603,7 +4996,7 @@ export class AppSessionInfo implements IAppSessionInfo {
             else {
                 this.channelProtocols = null as any;
             }
-            this.isTcpProxySupported = _data["isTcpProxySupported"] !== undefined ? _data["isTcpProxySupported"] : null as any;
+            this.isTcpForwardingSupported = _data["isTcpForwardingSupported"] !== undefined ? _data["isTcpForwardingSupported"] : null as any;
             this.isTcpPacketSupported = _data["isTcpPacketSupported"] !== undefined ? _data["isTcpPacketSupported"] : null as any;
             this.isQuicPacketSupported = _data["isQuicPacketSupported"] !== undefined ? _data["isQuicPacketSupported"] : null as any;
             this.isUdpPacketSupported = _data["isUdpPacketSupported"] !== undefined ? _data["isUdpPacketSupported"] : null as any;
@@ -4635,7 +5028,7 @@ export class AppSessionInfo implements IAppSessionInfo {
             for (let item of this.channelProtocols)
                 data["channelProtocols"].push(item);
         }
-        data["isTcpProxySupported"] = this.isTcpProxySupported !== undefined ? this.isTcpProxySupported : null as any;
+        data["isTcpForwardingSupported"] = this.isTcpForwardingSupported !== undefined ? this.isTcpForwardingSupported : null as any;
         data["isTcpPacketSupported"] = this.isTcpPacketSupported !== undefined ? this.isTcpPacketSupported : null as any;
         data["isQuicPacketSupported"] = this.isQuicPacketSupported !== undefined ? this.isQuicPacketSupported : null as any;
         data["isUdpPacketSupported"] = this.isUdpPacketSupported !== undefined ? this.isUdpPacketSupported : null as any;
@@ -4643,36 +5036,69 @@ export class AppSessionInfo implements IAppSessionInfo {
     }
 }
 
+/** Represents a VPN session as its server set it up. */
 export interface IAppSessionInfo {
+    /** Gets the access's terms and state, as its access manager reports them, or null. */
     accessInfo: AccessInfo | null;
+    /** Gets the session's DNS: its servers, where they came from, and whether the tunnel carries them. */
     dnsConfig: DnsConfig;
+    /** Gets or sets a value indicating whether the server lets the client reach the local networks. */
     isLocalNetworkAllowed: boolean;
+    /** Gets a value indicating whether the server's own configuration leaves public destinations outside the tunnel. */
     isTrafficSplitByServer: boolean;
+    /** Gets a value indicating whether the server carries IPv6; when not, the client blocks or bypasses IPv6 as
+the split tunneling's settings say. */
     isIpV6SupportedByServer: boolean;
+    /** Gets the server's location, or null. */
     serverLocationInfo: CurrentServerLocationInfo | null;
+    /** Gets a value indicating whether the session is premium. */
     isPremiumSession: boolean;
+    /** Gets whose session this one took the place of, if any. */
     suppressedTo: SessionSuppressType;
+    /** Gets the server's version. */
     serverVersion: string;
+    /** Gets the client's public IP address as the server sees it. */
     clientPublicIpAddress: string;
+    /** Gets or sets when the session was made, in UTC. */
     createdTime: Date;
+    /** Gets the protocols the session's packet channels can use, by what the server takes and this device can make. */
     channelProtocols: ChannelProtocol[];
-    isTcpProxySupported: boolean;
+    /** Gets a value indicating whether the server forwards TCP connections the client ends on the device. */
+    isTcpForwardingSupported: boolean;
+    /** Gets a value indicating whether the server takes TCP as packets over IPv4, which the TCP forwarding switch needs. */
     isTcpPacketSupported: boolean;
+    /** Gets a value indicating whether the server carries the device's QUIC; where it does not, the client drops it as
+DropQuic does, whatever that says, while it forwards IPv4 TCP. */
     isQuicPacketSupported: boolean;
+    /** Gets a value indicating whether the server carries the device's UDP; where it does not, the client drops it as
+DropUdp does, whatever that says, while it forwards IPv4 TCP. */
     isUdpPacketSupported: boolean;
 }
 
+/** Represents an access's terms and state, as its issuer reports them. */
 export class AccessInfo implements IAccessInfo {
+    /** Gets a value indicating whether the access manager reports the access as new; the file access manager always
+reports false. */
     isNew!: boolean;
+    /** Gets when the access was made, in UTC. */
     createdTime!: Date;
+    /** Gets when the access was last used, in UTC. */
     lastUsedTime!: Date;
+    /** Gets when the access expires, in UTC, not a session's, or null for never. */
     expirationTime?: Date | null;
+    /** Gets a value indicating whether the access is premium. */
     isPremium!: boolean;
+    /** Gets or sets the bytes the access may move in a cycle; 0 where the access manager reports no limit. */
     maxCycleTraffic!: number;
+    /** Gets or sets the bytes the access may move in all; 0 where the access manager reports no limit. */
     maxTotalTraffic!: number;
+    /** Gets the number of devices that may use the access, 0 for no limit. */
     maxDeviceCount!: number;
+    /** Gets the speed limits each way, in megabits a second, or null. */
     maxSpeedMbps?: Traffic | null;
+    /** Gets, in days, how long the access manager keeps a device's record after its last use, as it reports it. */
     deviceLifeSpan!: number;
+    /** Gets the devices that used the access, or null. */
     devicesSummary?: AccessDevicesSummary | null;
 
     constructor(data?: IAccessInfo) {
@@ -4724,22 +5150,38 @@ export class AccessInfo implements IAccessInfo {
     }
 }
 
+/** Represents an access's terms and state, as its issuer reports them. */
 export interface IAccessInfo {
+    /** Gets a value indicating whether the access manager reports the access as new; the file access manager always
+reports false. */
     isNew: boolean;
+    /** Gets when the access was made, in UTC. */
     createdTime: Date;
+    /** Gets when the access was last used, in UTC. */
     lastUsedTime: Date;
+    /** Gets when the access expires, in UTC, not a session's, or null for never. */
     expirationTime?: Date | null;
+    /** Gets a value indicating whether the access is premium. */
     isPremium: boolean;
+    /** Gets or sets the bytes the access may move in a cycle; 0 where the access manager reports no limit. */
     maxCycleTraffic: number;
+    /** Gets or sets the bytes the access may move in all; 0 where the access manager reports no limit. */
     maxTotalTraffic: number;
+    /** Gets the number of devices that may use the access, 0 for no limit. */
     maxDeviceCount: number;
+    /** Gets the speed limits each way, in megabits a second, or null. */
     maxSpeedMbps?: Traffic | null;
+    /** Gets, in days, how long the access manager keeps a device's record after its last use, as it reports it. */
     deviceLifeSpan: number;
+    /** Gets the devices that used the access, or null. */
     devicesSummary?: AccessDevicesSummary | null;
 }
 
+/** Represents an amount each way: bytes, or a rate where a member says so. */
 export class Traffic implements ITraffic {
+    /** Gets the amount sent. */
     sent!: number;
+    /** Gets the amount received. */
     received!: number;
 
     constructor(data?: ITraffic) {
@@ -4773,14 +5215,21 @@ export class Traffic implements ITraffic {
     }
 }
 
+/** Represents an amount each way: bytes, or a rate where a member says so. */
 export interface ITraffic {
+    /** Gets the amount sent. */
     sent: number;
+    /** Gets the amount received. */
     received: number;
 }
 
+/** Represents the devices that used an access. */
 export class AccessDevicesSummary implements IAccessDevicesSummary {
+    /** Gets the number of devices. */
     deviceCount!: number;
+    /** Gets a value indicating whether there are more devices than DeviceCount. */
     hasMoreDevices!: boolean;
+    /** Gets the devices, or null. */
     devices?: AccessDevice[] | null;
 
     constructor(data?: IAccessDevicesSummary) {
@@ -4827,15 +5276,23 @@ export class AccessDevicesSummary implements IAccessDevicesSummary {
     }
 }
 
+/** Represents the devices that used an access. */
 export interface IAccessDevicesSummary {
+    /** Gets the number of devices. */
     deviceCount: number;
+    /** Gets a value indicating whether there are more devices than DeviceCount. */
     hasMoreDevices: boolean;
+    /** Gets the devices, or null. */
     devices?: AccessDevice[] | null;
 }
 
+/** Represents a device that used an access. */
 export class AccessDevice implements IAccessDevice {
+    /** Gets or sets when the device last used the access, in UTC. */
     lastUsedTime!: Date;
+    /** Gets or sets the device's operating system, or null. */
     operatingSystem?: string | null;
+    /** Gets or sets the device's IP address as last seen, or null. */
     ipAddress?: string | null;
 
     constructor(data?: IAccessDevice) {
@@ -4871,16 +5328,27 @@ export class AccessDevice implements IAccessDevice {
     }
 }
 
+/** Represents a device that used an access. */
 export interface IAccessDevice {
+    /** Gets or sets when the device last used the access, in UTC. */
     lastUsedTime: Date;
+    /** Gets or sets the device's operating system, or null. */
     operatingSystem?: string | null;
+    /** Gets or sets the device's IP address as last seen, or null. */
     ipAddress?: string | null;
 }
 
+/** Represents a session's DNS: its servers, where they came from, and whether the tunnel carries them. */
 export class DnsConfig implements IDnsConfig {
+    /** Gets where the servers came from. */
     dnsSelection!: DnsSelection;
+    /** Gets a value indicating whether the plan is for the tunnel to carry the queries to the servers; a server at the
+VPN server's own address is reached outside it all the same, as that address always is. */
     isIncludedInVpn!: boolean;
+    /** Gets a value indicating whether the user's own servers were set aside, as servers the tunnel cannot carry while
+DNS must stay inside it. */
     isUserSuppressed!: boolean;
+    /** Gets the DNS servers. */
     dnsServers!: string[];
 
     constructor(data?: IDnsConfig) {
@@ -4932,26 +5400,42 @@ export class DnsConfig implements IDnsConfig {
     }
 }
 
+/** Represents a session's DNS: its servers, where they came from, and whether the tunnel carries them. */
 export interface IDnsConfig {
+    /** Gets where the servers came from. */
     dnsSelection: DnsSelection;
+    /** Gets a value indicating whether the plan is for the tunnel to carry the queries to the servers; a server at the
+VPN server's own address is reached outside it all the same, as that address always is. */
     isIncludedInVpn: boolean;
+    /** Gets a value indicating whether the user's own servers were set aside, as servers the tunnel cannot carry while
+DNS must stay inside it. */
     isUserSuppressed: boolean;
+    /** Gets the DNS servers. */
     dnsServers: string[];
 }
 
+/** Specifies where a session's DNS servers came from. */
 export enum DnsSelection {
     UserDns = "UserDns",
     ServerDns = "ServerDns",
     GoogleDns = "GoogleDns",
 }
 
+/** Represents a server location as the state or a session reports it; the UI names the country from its code, in the language it shows. */
 export class CurrentServerLocationInfo implements ICurrentServerLocationInfo {
+    /** Gets the country's two-letter code, or * for the automatic location. */
     countryCode!: string;
+    /** Gets the region's name, or * for any region. */
     regionName!: string;
+    /** Gets the location without its tags, as US/California. */
     serverLocation!: string;
+    /** Gets the country's English name, for a code the UI cannot name. */
     countryName!: string;
+    /** Gets a value indicating whether this is the automatic location, *\/*. */
     isAuto!: boolean;
+    /** Gets a value indicating whether the location names a region. */
     hasRegion!: boolean;
+    /** Gets a value indicating whether the VPN profile's locations have more than one region in the country. */
     hasMultipleRegions!: boolean;
 
     constructor(data?: ICurrentServerLocationInfo) {
@@ -4995,41 +5479,78 @@ export class CurrentServerLocationInfo implements ICurrentServerLocationInfo {
     }
 }
 
+/** Represents a server location as the state or a session reports it; the UI names the country from its code, in the language it shows. */
 export interface ICurrentServerLocationInfo {
+    /** Gets the country's two-letter code, or * for the automatic location. */
     countryCode: string;
+    /** Gets the region's name, or * for any region. */
     regionName: string;
+    /** Gets the location without its tags, as US/California. */
     serverLocation: string;
+    /** Gets the country's English name, for a code the UI cannot name. */
     countryName: string;
+    /** Gets a value indicating whether this is the automatic location, *\/*. */
     isAuto: boolean;
+    /** Gets a value indicating whether the location names a region. */
     hasRegion: boolean;
+    /** Gets a value indicating whether the VPN profile's locations have more than one region in the country. */
     hasMultipleRegions: boolean;
 }
 
+/** Specifies whose newer session took a session's place. */
 export enum SessionSuppressType {
     None = "None",
     YourSelf = "YourSelf",
     Other = "Other",
 }
 
+/** Represents a session's state as the VPN service reports it to the app: its traffic, its channels, and what its access allows. */
 export class AppSessionStatus implements IAppSessionStatus {
+    /** Gets the statistics of the connections the client opens to the server. */
     connectorStat!: AppConnectorStat;
+    /** Gets the tunnel's speed now, sent and received, in bytes per second. */
     speed!: Traffic;
+    /** Gets the traffic the tunnel carried in this session. */
     sessionTraffic!: Traffic;
+    /** Gets the traffic the client sent around the tunnel in this session, by the splits and while it waited for an ad. */
     sessionSplitTraffic!: Traffic;
+    /** Gets the access's traffic in its current cycle: what it was when the session began, and this session's since. */
     cycleTraffic!: Traffic;
+    /** Gets the access's traffic in all: what it was when the session began, and this session's since; that part is zero
+where the access manager does not report it. */
     totalTraffic!: Traffic;
+    /** Gets how many TCP connections the client forwarded through the tunnel in this session, and QUIC flows whose
+domain name the client read and the domain filter included or left to the default. */
     streamTunnelledCount!: number;
+    /** Gets how many TCP connections the client sent around the tunnel in this session, and QUIC flows whose domain name
+the client read and the domain filter excluded. */
     streamPassthruCount!: number;
+    /** Gets the packet channels the tunnel holds now, a closed one not cleaned up yet among them; the UDP channel counts
+as one while it is open. */
     packetChannelCount!: number;
+    /** Gets how many times the session went from Connected to
+Unstable. */
     unstableCount!: number;
+    /** Gets how many times a request failed past the unstable timeout and paused the session
+(Waiting), a pause while it already waits counted too. */
     waitingCount!: number;
+    /** Gets a value indicating whether a rewarded ad can extend the session now. */
     canExtendByRewardedAd!: boolean;
+    /** Gets the access's traffic quota, in bytes, as the server last reported it; 0 for none. */
     sessionMaxTraffic!: number;
+    /** Gets when the session expires, in UTC, or null where the access manager reports no time. */
     sessionExpirationTime!: Date | null;
+    /** Gets the number of clients using the access now, or null where not told. */
     activeClientCount!: number | null;
-    isTcpProxy!: boolean;
-    canChangeTcpProxy!: boolean;
+    /** Gets a value indicating whether the client forwards IPv4 TCP now, by the setting and the server. */
+    isTcpForwarding!: boolean;
+    /** Gets a value indicating whether the person can switch TCP forwarding: the server can both forward IPv4 TCP and
+carry it as packets, and no domain filter needs forwarding. */
+    canChangeTcpForwarding!: boolean;
+    /** Gets or sets a value indicating whether the client drops the QUIC bound for the tunnel now, by the setting and
+the server. */
     isDropQuic!: boolean;
+    /** Gets the protocol of the session's packet channels now. */
     channelProtocol!: ChannelProtocol;
 
     constructor(data?: IAppSessionStatus) {
@@ -5066,8 +5587,8 @@ export class AppSessionStatus implements IAppSessionStatus {
             this.sessionMaxTraffic = _data["sessionMaxTraffic"] !== undefined ? _data["sessionMaxTraffic"] : null as any;
             this.sessionExpirationTime = _data["sessionExpirationTime"] ? new Date(_data["sessionExpirationTime"].toString()) : null as any;
             this.activeClientCount = _data["activeClientCount"] !== undefined ? _data["activeClientCount"] : null as any;
-            this.isTcpProxy = _data["isTcpProxy"] !== undefined ? _data["isTcpProxy"] : null as any;
-            this.canChangeTcpProxy = _data["canChangeTcpProxy"] !== undefined ? _data["canChangeTcpProxy"] : null as any;
+            this.isTcpForwarding = _data["isTcpForwarding"] !== undefined ? _data["isTcpForwarding"] : null as any;
+            this.canChangeTcpForwarding = _data["canChangeTcpForwarding"] !== undefined ? _data["canChangeTcpForwarding"] : null as any;
             this.isDropQuic = _data["isDropQuic"] !== undefined ? _data["isDropQuic"] : null as any;
             this.channelProtocol = _data["channelProtocol"] !== undefined ? _data["channelProtocol"] : null as any;
         }
@@ -5097,41 +5618,76 @@ export class AppSessionStatus implements IAppSessionStatus {
         data["sessionMaxTraffic"] = this.sessionMaxTraffic !== undefined ? this.sessionMaxTraffic : null as any;
         data["sessionExpirationTime"] = this.sessionExpirationTime ? this.sessionExpirationTime.toISOString() : null as any;
         data["activeClientCount"] = this.activeClientCount !== undefined ? this.activeClientCount : null as any;
-        data["isTcpProxy"] = this.isTcpProxy !== undefined ? this.isTcpProxy : null as any;
-        data["canChangeTcpProxy"] = this.canChangeTcpProxy !== undefined ? this.canChangeTcpProxy : null as any;
+        data["isTcpForwarding"] = this.isTcpForwarding !== undefined ? this.isTcpForwarding : null as any;
+        data["canChangeTcpForwarding"] = this.canChangeTcpForwarding !== undefined ? this.canChangeTcpForwarding : null as any;
         data["isDropQuic"] = this.isDropQuic !== undefined ? this.isDropQuic : null as any;
         data["channelProtocol"] = this.channelProtocol !== undefined ? this.channelProtocol : null as any;
         return data;
     }
 }
 
+/** Represents a session's state as the VPN service reports it to the app: its traffic, its channels, and what its access allows. */
 export interface IAppSessionStatus {
+    /** Gets the statistics of the connections the client opens to the server. */
     connectorStat: AppConnectorStat;
+    /** Gets the tunnel's speed now, sent and received, in bytes per second. */
     speed: Traffic;
+    /** Gets the traffic the tunnel carried in this session. */
     sessionTraffic: Traffic;
+    /** Gets the traffic the client sent around the tunnel in this session, by the splits and while it waited for an ad. */
     sessionSplitTraffic: Traffic;
+    /** Gets the access's traffic in its current cycle: what it was when the session began, and this session's since. */
     cycleTraffic: Traffic;
+    /** Gets the access's traffic in all: what it was when the session began, and this session's since; that part is zero
+where the access manager does not report it. */
     totalTraffic: Traffic;
+    /** Gets how many TCP connections the client forwarded through the tunnel in this session, and QUIC flows whose
+domain name the client read and the domain filter included or left to the default. */
     streamTunnelledCount: number;
+    /** Gets how many TCP connections the client sent around the tunnel in this session, and QUIC flows whose domain name
+the client read and the domain filter excluded. */
     streamPassthruCount: number;
+    /** Gets the packet channels the tunnel holds now, a closed one not cleaned up yet among them; the UDP channel counts
+as one while it is open. */
     packetChannelCount: number;
+    /** Gets how many times the session went from Connected to
+Unstable. */
     unstableCount: number;
+    /** Gets how many times a request failed past the unstable timeout and paused the session
+(Waiting), a pause while it already waits counted too. */
     waitingCount: number;
+    /** Gets a value indicating whether a rewarded ad can extend the session now. */
     canExtendByRewardedAd: boolean;
+    /** Gets the access's traffic quota, in bytes, as the server last reported it; 0 for none. */
     sessionMaxTraffic: number;
+    /** Gets when the session expires, in UTC, or null where the access manager reports no time. */
     sessionExpirationTime: Date | null;
+    /** Gets the number of clients using the access now, or null where not told. */
     activeClientCount: number | null;
-    isTcpProxy: boolean;
-    canChangeTcpProxy: boolean;
+    /** Gets a value indicating whether the client forwards IPv4 TCP now, by the setting and the server. */
+    isTcpForwarding: boolean;
+    /** Gets a value indicating whether the person can switch TCP forwarding: the server can both forward IPv4 TCP and
+carry it as packets, and no domain filter needs forwarding. */
+    canChangeTcpForwarding: boolean;
+    /** Gets or sets a value indicating whether the client drops the QUIC bound for the tunnel now, by the setting and
+the server. */
     isDropQuic: boolean;
+    /** Gets the protocol of the session's packet channels now. */
     channelProtocol: ChannelProtocol;
 }
 
+/** Represents the statistics of the client's connections to the server in a session. */
 export class AppConnectorStat implements IAppConnectorStat {
+    /** Gets how many idle connections the client keeps for reuse now. */
     freeConnectionCount!: number;
+    /** Gets how many times a kept connection failed when the client reused it, but by the server's error reply or a
+cancel. */
     reusedConnectionFailedCount!: number;
+    /** Gets how many times a kept connection carried a request to an answer without an error. */
     reusedConnectionSucceededCount!: number;
+    /** Gets how many request connections the client made to the server, its recovery probes aside. */
     createdConnectionCount!: number;
+    /** Gets how many requests the server answered without an error. */
     requestCount!: number;
 
     constructor(data?: IAppConnectorStat) {
@@ -5171,19 +5727,32 @@ export class AppConnectorStat implements IAppConnectorStat {
     }
 }
 
+/** Represents the statistics of the client's connections to the server in a session. */
 export interface IAppConnectorStat {
+    /** Gets how many idle connections the client keeps for reuse now. */
     freeConnectionCount: number;
+    /** Gets how many times a kept connection failed when the client reused it, but by the server's error reply or a
+cancel. */
     reusedConnectionFailedCount: number;
+    /** Gets how many times a kept connection carried a request to an answer without an error. */
     reusedConnectionSucceededCount: number;
+    /** Gets how many request connections the client made to the server, its recovery probes aside. */
     createdConnectionCount: number;
+    /** Gets how many requests the server answered without an error. */
     requestCount: number;
 }
 
+/** Represents a proxy connector's state, as it stood when it was read: its proxies by the outcome of their last use, and its session's tally. */
 export class AppProxyConnectorStatus implements IAppProxyConnectorStatus {
+    /** Gets the tally of the connector's connections in this session. */
     sessionStatus!: ProxySessionStatus;
+    /** Gets the number of enabled endpoints whose last use succeeded. */
     succeededServerCount!: number;
+    /** Gets the number of enabled endpoints used whose last use did not succeed. */
     failedServerCount!: number;
+    /** Gets the number of enabled endpoints never used. */
     unknownServerCount!: number;
+    /** Gets the number of disabled endpoints. */
     disabledServerCount!: number;
 
     constructor(data?: IAppProxyConnectorStatus) {
@@ -5226,20 +5795,33 @@ export class AppProxyConnectorStatus implements IAppProxyConnectorStatus {
     }
 }
 
+/** Represents a proxy connector's state, as it stood when it was read: its proxies by the outcome of their last use, and its session's tally. */
 export interface IAppProxyConnectorStatus {
+    /** Gets the tally of the connector's connections in this session. */
     sessionStatus: ProxySessionStatus;
+    /** Gets the number of enabled endpoints whose last use succeeded. */
     succeededServerCount: number;
+    /** Gets the number of enabled endpoints used whose last use did not succeed. */
     failedServerCount: number;
+    /** Gets the number of enabled endpoints never used. */
     unknownServerCount: number;
+    /** Gets the number of disabled endpoints. */
     disabledServerCount: number;
 }
 
+/** Represents the tally of proxy connections in the current VPN session, across every proxy, as it stood when it was read. */
 export class ProxySessionStatus implements IProxySessionStatus {
+    /** Gets or sets the number of connections that succeeded. */
     succeededCount!: number;
+    /** Gets or sets the number of connections that failed. */
     failedCount!: number;
+    /** Gets or sets how long the last connection took, or null when it failed. */
     latency?: string | null;
+    /** Gets or sets when a connection last succeeded, in UTC, or null. */
     lastSucceeded?: Date | null;
+    /** Gets or sets when a connection last failed, in UTC, or null. */
     lastFailed?: Date | null;
+    /** Gets or sets the last failure's message, or null after a success. */
     errorMessage?: string | null;
 
     constructor(data?: IProxySessionStatus) {
@@ -5281,20 +5863,33 @@ export class ProxySessionStatus implements IProxySessionStatus {
     }
 }
 
+/** Represents the tally of proxy connections in the current VPN session, across every proxy, as it stood when it was read. */
 export interface IProxySessionStatus {
+    /** Gets or sets the number of connections that succeeded. */
     succeededCount: number;
+    /** Gets or sets the number of connections that failed. */
     failedCount: number;
+    /** Gets or sets how long the last connection took, or null when it failed. */
     latency?: string | null;
+    /** Gets or sets when a connection last succeeded, in UTC, or null. */
     lastSucceeded?: Date | null;
+    /** Gets or sets when a connection last failed, in UTC, or null. */
     lastFailed?: Date | null;
+    /** Gets or sets the last failure's message, or null after a success. */
     errorMessage?: string | null;
 }
 
+/** Represents an exception as an API sends it: its type's names, its message, its data and its inner exception's message, as JSON a client turns back into an exception. */
 export class ApiError implements IApiError {
+    /** Gets the exception type's name, such as NotExistsException. */
     typeName!: string;
+    /** Gets the exception type's full name, or null. */
     typeFullName?: string | null;
+    /** Gets the exception's message. */
     message!: string;
+    /** Gets the exception's data, as text. The default is none, and JSON null reads as none. */
     data!: { [key: string]: string; };
+    /** Gets the inner exception's message, or null. */
     innerMessage?: string | null;
 
     constructor(data?: IApiError) {
@@ -5352,29 +5947,53 @@ export class ApiError implements IApiError {
     }
 }
 
+/** Represents an exception as an API sends it: its type's names, its message, its data and its inner exception's message, as JSON a client turns back into an exception. */
 export interface IApiError {
+    /** Gets the exception type's name, such as NotExistsException. */
     typeName: string;
+    /** Gets the exception type's full name, or null. */
     typeFullName?: string | null;
+    /** Gets the exception's message. */
     message: string;
+    /** Gets the exception's data, as text. The default is none, and JSON null reads as none. */
     data: { [key: string]: string; };
+    /** Gets the inner exception's message, or null. */
     innerMessage?: string | null;
 }
 
+/** Represents the current VPN profile as the state carries it: what the main screen needs. */
 export class VpnProfileBaseInfo implements IVpnProfileBaseInfo {
+    /** Gets the VPN profile's ID. */
     vpnProfileId!: string;
+    /** Gets the VPN profile's name, as the person named it or the access key does. */
     vpnProfileName!: string;
+    /** Gets the access key's support ID, which the server's operator knows it by, or null. */
     supportId!: string | null;
+    /** Gets the text a UI keeps with the VPN profile, or null. */
     customData!: string | null;
+    /** Gets a value indicating whether the person chose a premium location. */
     isPremiumLocationSelected!: boolean;
+    /** Gets a value indicating whether the VPN profile is premium. */
     isPremium!: boolean;
+    /** Gets a value indicating whether the VPN profile has a premium code. */
     hasAccessCode!: boolean;
+    /** Gets the access server's refusal of the profile's premium code, until a connect succeeds or the code changes or is
+removed, or null. */
     accessCodeRefusal!: AccessCodeRefusal | null;
+    /** Gets a value indicating whether the server's policy lets the person go premium, by a premium code or a purchase. */
     canGoPremium!: boolean;
+    /** Gets a value indicating whether the server's policy offers a premium trial. */
     canTryPremium!: boolean;
+    /** Gets a value indicating whether a premium code may be typed in on the VPN profile: the server's policy and this build both allow it. */
     canImportAccessCode!: boolean;
+    /** Gets a value indicating whether the VPN profile's premium code may be shown, as the server's policy allows. */
     canViewAccessCode!: boolean;
+    /** Gets the server location a connect goes to: the one the person chose, else the automatic one, else the first; or
+null where the VPN profile has none. */
     selectedLocationInfo!: ServerLocationItem | null;
+    /** Gets the server's addresses the person gave, used instead of the access key's where enabled, or null. */
     customServerEndpoints?: string[] | null;
+    /** Gets a value indicating whether the VPN profile connects to CustomServerEndpoints. */
     isCustomServerEndpointsEnabled!: boolean;
 
     constructor(data?: IVpnProfileBaseInfo) {
@@ -5445,26 +6064,48 @@ export class VpnProfileBaseInfo implements IVpnProfileBaseInfo {
     }
 }
 
+/** Represents the current VPN profile as the state carries it: what the main screen needs. */
 export interface IVpnProfileBaseInfo {
+    /** Gets the VPN profile's ID. */
     vpnProfileId: string;
+    /** Gets the VPN profile's name, as the person named it or the access key does. */
     vpnProfileName: string;
+    /** Gets the access key's support ID, which the server's operator knows it by, or null. */
     supportId: string | null;
+    /** Gets the text a UI keeps with the VPN profile, or null. */
     customData: string | null;
+    /** Gets a value indicating whether the person chose a premium location. */
     isPremiumLocationSelected: boolean;
+    /** Gets a value indicating whether the VPN profile is premium. */
     isPremium: boolean;
+    /** Gets a value indicating whether the VPN profile has a premium code. */
     hasAccessCode: boolean;
+    /** Gets the access server's refusal of the profile's premium code, until a connect succeeds or the code changes or is
+removed, or null. */
     accessCodeRefusal: AccessCodeRefusal | null;
+    /** Gets a value indicating whether the server's policy lets the person go premium, by a premium code or a purchase. */
     canGoPremium: boolean;
+    /** Gets a value indicating whether the server's policy offers a premium trial. */
     canTryPremium: boolean;
+    /** Gets a value indicating whether a premium code may be typed in on the VPN profile: the server's policy and this build both allow it. */
     canImportAccessCode: boolean;
+    /** Gets a value indicating whether the VPN profile's premium code may be shown, as the server's policy allows. */
     canViewAccessCode: boolean;
+    /** Gets the server location a connect goes to: the one the person chose, else the automatic one, else the first; or
+null where the VPN profile has none. */
     selectedLocationInfo: ServerLocationItem | null;
+    /** Gets the server's addresses the person gave, used instead of the access key's where enabled, or null. */
     customServerEndpoints?: string[] | null;
+    /** Gets a value indicating whether the VPN profile connects to CustomServerEndpoints. */
     isCustomServerEndpointsEnabled: boolean;
 }
 
+/** Represents the access server's refusal of a VPN profile's premium code, kept with the profile until a connection succeeds or the code changes. */
 export class AccessCodeRefusal implements IAccessCodeRefusal {
+    /** Gets the access server's reason: only AccessExpired may be shown as an expired code,
+and any other is a refusal. */
     errorCode!: SessionErrorCode;
+    /** Gets when the access server refused the code, in UTC. */
     refusedTime!: Date;
 
     constructor(data?: IAccessCodeRefusal) {
@@ -5498,11 +6139,16 @@ export class AccessCodeRefusal implements IAccessCodeRefusal {
     }
 }
 
+/** Represents the access server's refusal of a VPN profile's premium code, kept with the profile until a connection succeeds or the code changes. */
 export interface IAccessCodeRefusal {
+    /** Gets the access server's reason: only AccessExpired may be shown as an expired code,
+and any other is a refusal. */
     errorCode: SessionErrorCode;
+    /** Gets when the access server refused the code, in UTC. */
     refusedTime: Date;
 }
 
+/** Specifies the outcome of a session's request, or why the session ended. */
 export enum SessionErrorCode {
     Ok = "Ok",
     AccessError = "AccessError",
@@ -5527,16 +6173,28 @@ export enum SessionErrorCode {
     UnsupportedServer = "UnsupportedServer",
 }
 
+/** Represents a server location the person may pick, as the app built it: the country and region, whether it is a country above its own regions, and what the person may do with it. */
 export class ServerLocationItem implements IServerLocationItem {
+    /** Gets the country's two-letter code, or * for the automatic location. */
     countryCode!: string;
+    /** Gets the region's name, or * for any region. */
     regionName!: string;
+    /** Gets or sets the operator's tags of the location, as #premium and #unblockable, or
+null; a country above its regions carries ~#tag where only some of them have one. */
     tags?: string[] | null;
+    /** Gets the location without its tags, as US/California. */
     serverLocation!: string;
+    /** Gets the country's English name, for a code the UI cannot name. */
     countryName!: string;
+    /** Gets a value indicating whether this is the automatic location, *\/*. */
     isAuto!: boolean;
+    /** Gets a value indicating whether the location names a region. */
     hasRegion!: boolean;
+    /** Gets a value indicating whether the location is listed under its country's own entry, as one of its several regions. */
     isNestedCountry!: boolean;
+    /** Gets a value indicating whether the location is the one picked when the person picks none. */
     isDefault!: boolean;
+    /** Gets or sets what the person may do with the location. The default offers an ordinary connection with no limit. */
     options!: ServerLocationOptions;
 
     constructor(data?: IServerLocationItem) {
@@ -5600,30 +6258,55 @@ export class ServerLocationItem implements IServerLocationItem {
     }
 }
 
+/** Represents a server location the person may pick, as the app built it: the country and region, whether it is a country above its own regions, and what the person may do with it. */
 export interface IServerLocationItem {
+    /** Gets the country's two-letter code, or * for the automatic location. */
     countryCode: string;
+    /** Gets the region's name, or * for any region. */
     regionName: string;
+    /** Gets or sets the operator's tags of the location, as #premium and #unblockable, or
+null; a country above its regions carries ~#tag where only some of them have one. */
     tags?: string[] | null;
+    /** Gets the location without its tags, as US/California. */
     serverLocation: string;
+    /** Gets the country's English name, for a code the UI cannot name. */
     countryName: string;
+    /** Gets a value indicating whether this is the automatic location, *\/*. */
     isAuto: boolean;
+    /** Gets a value indicating whether the location names a region. */
     hasRegion: boolean;
+    /** Gets a value indicating whether the location is listed under its country's own entry, as one of its several regions. */
     isNestedCountry: boolean;
+    /** Gets a value indicating whether the location is the one picked when the person picks none. */
     isDefault: boolean;
+    /** Gets or sets what the person may do with the location. The default offers an ordinary connection with no limit. */
     options: ServerLocationOptions;
 }
 
+/** Represents what the person may do with a server location: its plans, as the server's policy and this build allow them. */
 export class ServerLocationOptions implements IServerLocationOptions {
+    /** Gets or sets the minutes of an ordinary connection (Normal), 0
+for no limit, or null where none is offered. */
     normal?: number | null;
+    /** Gets or sets the minutes of an ordinary connection after a rewarded ad, 0 for no limit, or null where none is offered. */
     normalByRewardedAd?: number | null;
+    /** Gets or sets the minutes of a premium trial, 0 for no limit, or null where none is offered. */
     premiumByTrial?: number | null;
+    /** Gets or sets the minutes of premium a rewarded ad gives, 0 for no limit, or null where none is offered. */
     premiumByRewardedAd?: number | null;
+    /** Gets or sets a value indicating whether premium can be bought here: the policy offers it, and this build has a store or may open the operator's shop. */
     premiumByPurchase!: boolean;
+    /** Gets or sets a value indicating whether premium can be had by a premium code here: the policy offers it, and this build takes typed codes. */
     premiumByCode!: boolean;
+    /** Gets or sets a value indicating whether premium can be bought or had by a code here. */
     canGoPremium!: boolean;
+    /** Gets or sets a value indicating whether the location has free servers. */
     hasFree!: boolean;
+    /** Gets or sets a value indicating whether the location has premium servers. */
     hasPremium!: boolean;
+    /** Gets or sets a value indicating whether the location has unblockable servers. */
     hasUnblockable!: boolean;
+    /** Gets or sets a value indicating whether a connect to the location asks the person to choose a plan first: a trial or a rewarded ad is offered. */
     prompt!: boolean;
 
     constructor(data?: IServerLocationOptions) {
@@ -5675,25 +6358,47 @@ export class ServerLocationOptions implements IServerLocationOptions {
     }
 }
 
+/** Represents what the person may do with a server location: its plans, as the server's policy and this build allow them. */
 export interface IServerLocationOptions {
+    /** Gets or sets the minutes of an ordinary connection (Normal), 0
+for no limit, or null where none is offered. */
     normal?: number | null;
+    /** Gets or sets the minutes of an ordinary connection after a rewarded ad, 0 for no limit, or null where none is offered. */
     normalByRewardedAd?: number | null;
+    /** Gets or sets the minutes of a premium trial, 0 for no limit, or null where none is offered. */
     premiumByTrial?: number | null;
+    /** Gets or sets the minutes of premium a rewarded ad gives, 0 for no limit, or null where none is offered. */
     premiumByRewardedAd?: number | null;
+    /** Gets or sets a value indicating whether premium can be bought here: the policy offers it, and this build has a store or may open the operator's shop. */
     premiumByPurchase: boolean;
+    /** Gets or sets a value indicating whether premium can be had by a premium code here: the policy offers it, and this build takes typed codes. */
     premiumByCode: boolean;
+    /** Gets or sets a value indicating whether premium can be bought or had by a code here. */
     canGoPremium: boolean;
+    /** Gets or sets a value indicating whether the location has free servers. */
     hasFree: boolean;
+    /** Gets or sets a value indicating whether the location has premium servers. */
     hasPremium: boolean;
+    /** Gets or sets a value indicating whether the location has unblockable servers. */
     hasUnblockable: boolean;
+    /** Gets or sets a value indicating whether a connect to the location asks the person to choose a plan first: a trial or a rewarded ad is offered. */
     prompt: boolean;
 }
 
+/** Represents where the app's update stands, as the notice reads it. */
 export class AppUpdaterStatus implements IAppUpdaterStatus {
+    /** Gets when the app last recorded a check, of the store or of the feed, in UTC, or null. */
     checkedTime!: Date | null;
+    /** Gets how this version stands: against the store's offer where one is made, else against the feed's release. */
     versionStatus!: VersionStatus;
+    /** Gets the feed's release, or null where none was read. */
     publishInfo!: PublishInfo | null;
+    /** Gets a value indicating whether the notice should show: always for an update downloading, installing or failed; and,
+unless a desktop's automatic update still has time to install the release itself, for a downloaded update, and for
+an old version the store does not offer to update, outside the person's Later. */
     prompt!: boolean;
+    /** Gets the update the notice offers where the app updates itself, or null where it does not, as where
+a store's own screen shows it, and the notice keeps its link. */
     updateState!: AppUpdateState | null;
 
     constructor(data?: IAppUpdaterStatus) {
@@ -5733,14 +6438,24 @@ export class AppUpdaterStatus implements IAppUpdaterStatus {
     }
 }
 
+/** Represents where the app's update stands, as the notice reads it. */
 export interface IAppUpdaterStatus {
+    /** Gets when the app last recorded a check, of the store or of the feed, in UTC, or null. */
     checkedTime: Date | null;
+    /** Gets how this version stands: against the store's offer where one is made, else against the feed's release. */
     versionStatus: VersionStatus;
+    /** Gets the feed's release, or null where none was read. */
     publishInfo: PublishInfo | null;
+    /** Gets a value indicating whether the notice should show: always for an update downloading, installing or failed; and,
+unless a desktop's automatic update still has time to install the release itself, for a downloaded update, and for
+an old version the store does not offer to update, outside the person's Later. */
     prompt: boolean;
+    /** Gets the update the notice offers where the app updates itself, or null where it does not, as where
+a store's own screen shows it, and the notice keeps its link. */
     updateState: AppUpdateState | null;
 }
 
+/** Specifies how this version stands: against the store's offer where one is made, else against the feed's release. */
 export enum VersionStatus {
     Unknown = "Unknown",
     Latest = "Latest",
@@ -5748,14 +6463,24 @@ export enum VersionStatus {
     Deprecated = "Deprecated",
 }
 
+/** Represents a release as the app's update feed publishes it. */
 export class PublishInfo implements IPublishInfo {
+    /** Gets the release's version. */
     version!: string;
+    /** Gets the address of the feed that publishes it. */
     updateInfoUrl!: string;
+    /** Gets the address of the release's package. */
     packageUrl!: string;
+    /** Gets the release's Google Play page, or null. */
     googlePlayUrl?: string | null;
+    /** Gets the page that tells how to install the release. */
     installationPageUrl!: string;
+    /** Gets when the release was published, in UTC. */
     releaseDate!: Date;
+    /** Gets the newest deprecated version: an app at it or older must update. The default is 0.0, none. */
     deprecatedVersion!: string;
+    /** Gets how long after the release the app waits before it tells the person of it, which lets a store catch up.
+The default is none. */
     notificationDelay!: string;
 
     constructor(data?: IPublishInfo) {
@@ -5801,23 +6526,42 @@ export class PublishInfo implements IPublishInfo {
     }
 }
 
+/** Represents a release as the app's update feed publishes it. */
 export interface IPublishInfo {
+    /** Gets the release's version. */
     version: string;
+    /** Gets the address of the feed that publishes it. */
     updateInfoUrl: string;
+    /** Gets the address of the release's package. */
     packageUrl: string;
+    /** Gets the release's Google Play page, or null. */
     googlePlayUrl?: string | null;
+    /** Gets the page that tells how to install the release. */
     installationPageUrl: string;
+    /** Gets when the release was published, in UTC. */
     releaseDate: Date;
+    /** Gets the newest deprecated version: an app at it or older must update. The default is 0.0, none. */
     deprecatedVersion: string;
+    /** Gets how long after the release the app waits before it tells the person of it, which lets a store catch up.
+The default is none. */
     notificationDelay: string;
 }
 
+/** Represents an update of the app as it stands. */
 export class AppUpdateState implements IAppUpdateState {
+    /** Gets the version the update brings. */
     version!: string;
+    /** Gets where the update stands. */
     stage!: AppUpdateStage;
+    /** Gets the bytes of the update downloaded so far, as the channel tells them, or 0 where it tells none. */
     downloadedBytes!: number;
+    /** Gets the update's size, in bytes, as the channel tells it, or null where it tells none, as before the server has told it. */
     totalBytes!: number | null;
+    /** Gets why the update failed, in its download, its install or a read of its state, with Failed, or null. */
     errorMessage!: string | null;
+    /** Gets a value indicating whether, with Downloaded, the system still has to let the
+app install apps, which Install asks first, as Android's "Install unknown apps", so the person's next Install
+installs. */
     isInstallPermissionNeeded!: boolean;
 
     constructor(data?: IAppUpdateState) {
@@ -5859,15 +6603,25 @@ export class AppUpdateState implements IAppUpdateState {
     }
 }
 
+/** Represents an update of the app as it stands. */
 export interface IAppUpdateState {
+    /** Gets the version the update brings. */
     version: string;
+    /** Gets where the update stands. */
     stage: AppUpdateStage;
+    /** Gets the bytes of the update downloaded so far, as the channel tells them, or 0 where it tells none. */
     downloadedBytes: number;
+    /** Gets the update's size, in bytes, as the channel tells it, or null where it tells none, as before the server has told it. */
     totalBytes: number | null;
+    /** Gets why the update failed, in its download, its install or a read of its state, with Failed, or null. */
     errorMessage: string | null;
+    /** Gets a value indicating whether, with Downloaded, the system still has to let the
+app install apps, which Install asks first, as Android's "Install unknown apps", so the person's next Install
+installs. */
     isInstallPermissionNeeded: boolean;
 }
 
+/** Specifies where an update of the app stands. */
 export enum AppUpdateStage {
     None = "None",
     Available = "Available",
@@ -5877,8 +6631,11 @@ export enum AppUpdateStage {
     Failed = "Failed",
 }
 
+/** Represents a language the UI can show: its culture name, and its own name for itself. */
 export class UiCultureInfo implements IUiCultureInfo {
+    /** Gets the language's culture name, as fr. */
     code!: string;
+    /** Gets the language's name for itself, as français. */
     nativeName!: string;
 
     constructor(data?: IUiCultureInfo) {
@@ -5912,19 +6669,26 @@ export class UiCultureInfo implements IUiCultureInfo {
     }
 }
 
+/** Represents a language the UI can show: its culture name, and its own name for itself. */
 export interface IUiCultureInfo {
+    /** Gets the language's culture name, as fr. */
     code: string;
+    /** Gets the language's name for itself, as français. */
     nativeName: string;
 }
 
+/** Specifies where the app's purchase stands. */
 export enum PurchaseState {
     None = "None",
     Started = "Started",
     Processing = "Processing",
 }
 
+/** Represents the heights of the system bars over the app's window, in the device's pixels. */
 export class SystemBarsInfo implements ISystemBarsInfo {
+    /** Gets the height of the bar at the top, as the status bar. */
     topHeight!: number;
+    /** Gets the height of the bar at the bottom, as the navigation bar. */
     bottomHeight!: number;
 
     constructor(data?: ISystemBarsInfo) {
@@ -5958,13 +6722,19 @@ export class SystemBarsInfo implements ISystemBarsInfo {
     }
 }
 
+/** Represents the heights of the system bars over the app's window, in the device's pixels. */
 export interface ISystemBarsInfo {
+    /** Gets the height of the bar at the top, as the status bar. */
     topHeight: number;
+    /** Gets the height of the bar at the bottom, as the navigation bar. */
     bottomHeight: number;
 }
 
+/** Represents the device's private DNS: DNS over TLS that the system sends itself. */
 export class PrivateDns implements IPrivateDns {
+    /** Gets or sets a value indicating whether the private DNS is in use. */
     isActive!: boolean;
+    /** Gets or sets the private DNS server's host name, or null where the system chooses it. */
     provider?: string | null;
 
     constructor(data?: IPrivateDns) {
@@ -5998,32 +6768,53 @@ export class PrivateDns implements IPrivateDns {
     }
 }
 
+/** Represents the device's private DNS: DNS over TLS that the system sends itself. */
 export interface IPrivateDns {
+    /** Gets or sets a value indicating whether the private DNS is in use. */
     isActive: boolean;
+    /** Gets or sets the private DNS server's host name, or null where the system chooses it. */
     provider?: string | null;
 }
 
-export enum TcpProxyUsageReason {
+/** Specifies why the TCP forwarding switch is locked, if it is; it says nothing of what runs: the switch acts on IPv4, and IPv6 may go by TCP forwarding while it is off. */
+export enum TcpForwardingLockReason {
     None = "None",
     ServerRequiredOn = "ServerRequiredOn",
     ServerRequiredOff = "ServerRequiredOff",
     SplitDomainRequiredOn = "SplitDomainRequiredOn",
 }
 
+/** Represents the split tunneling in force, as the settings and the session make it, so the UI holds no rule of its own. */
 export class SplitTunnelingState implements ISplitTunnelingState {
+    /** Gets a value indicating whether the split tunneling is on, as the settings' switch says. */
     isEnabled!: boolean;
+    /** Gets a value indicating whether some public traffic of the tunneled apps may go outside the tunnel: by country, IP
+range or domain, by the server's declarations, or IPv6. Neither the local network, which cannot show the public
+address, nor the split by app counts. */
     isSplittingTraffic!: boolean;
+    /** Gets a value indicating whether the split by app is in force; it stays with the split tunneling off. */
     isAppSplit!: boolean;
+    /** Gets a value indicating whether the split by country is in force. */
     isCountrySplit!: boolean;
+    /** Gets a value indicating whether the app's own split by IP ranges is in force. */
     isIpViaAppSplit!: boolean;
+    /** Gets a value indicating whether the device adapter's split by IP ranges is in force. */
     isIpViaDeviceSplit!: boolean;
+    /** Gets a value indicating whether the split by domain is in force. */
     isDomainSplit!: boolean;
+    /** Gets a value indicating whether the local network goes outside the tunnel. */
     isLocalNetworkSplit!: boolean;
+    /** Gets a value indicating whether IPv6 goes outside the tunnel: the server cannot carry it, and the setting excludes rather than blocks it. */
     isIpV6Split!: boolean;
+    /** Gets a value indicating whether the server's own declarations leave public destinations out of the tunnel, while splitting is allowed. */
     isSplitByServer!: boolean;
+    /** Gets the split by country's mode in force. */
     countryMode!: SplitCountryMode;
+    /** Gets the countries the split by country names, by their codes. */
     countries!: string[];
+    /** Gets the DNS's split mode in force. */
     dnsMode!: SplitDnsMode;
+    /** Gets what happens to IPv6 the server cannot carry, as in force. */
     unsupportedIpV6Mode!: SplitUnsupportedIpMode;
 
     constructor(data?: ISplitTunnelingState) {
@@ -6095,23 +6886,41 @@ export class SplitTunnelingState implements ISplitTunnelingState {
     }
 }
 
+/** Represents the split tunneling in force, as the settings and the session make it, so the UI holds no rule of its own. */
 export interface ISplitTunnelingState {
+    /** Gets a value indicating whether the split tunneling is on, as the settings' switch says. */
     isEnabled: boolean;
+    /** Gets a value indicating whether some public traffic of the tunneled apps may go outside the tunnel: by country, IP
+range or domain, by the server's declarations, or IPv6. Neither the local network, which cannot show the public
+address, nor the split by app counts. */
     isSplittingTraffic: boolean;
+    /** Gets a value indicating whether the split by app is in force; it stays with the split tunneling off. */
     isAppSplit: boolean;
+    /** Gets a value indicating whether the split by country is in force. */
     isCountrySplit: boolean;
+    /** Gets a value indicating whether the app's own split by IP ranges is in force. */
     isIpViaAppSplit: boolean;
+    /** Gets a value indicating whether the device adapter's split by IP ranges is in force. */
     isIpViaDeviceSplit: boolean;
+    /** Gets a value indicating whether the split by domain is in force. */
     isDomainSplit: boolean;
+    /** Gets a value indicating whether the local network goes outside the tunnel. */
     isLocalNetworkSplit: boolean;
+    /** Gets a value indicating whether IPv6 goes outside the tunnel: the server cannot carry it, and the setting excludes rather than blocks it. */
     isIpV6Split: boolean;
+    /** Gets a value indicating whether the server's own declarations leave public destinations out of the tunnel, while splitting is allowed. */
     isSplitByServer: boolean;
+    /** Gets the split by country's mode in force. */
     countryMode: SplitCountryMode;
+    /** Gets the countries the split by country names, by their codes. */
     countries: string[];
+    /** Gets the DNS's split mode in force. */
     dnsMode: SplitDnsMode;
+    /** Gets what happens to IPv6 the server cannot carry, as in force. */
     unsupportedIpV6Mode: SplitUnsupportedIpMode;
 }
 
+/** Specifies the split by country's mode. */
 export enum SplitCountryMode {
     IncludeAll = "IncludeAll",
     ExcludeMyCountry = "ExcludeMyCountry",
@@ -6119,19 +6928,25 @@ export enum SplitCountryMode {
     IncludeList = "IncludeList",
 }
 
+/** Specifies where DNS may go, whatever the other splits say. */
 export enum SplitDnsMode {
     IncludeAll = "IncludeAll",
     DefaultRoute = "DefaultRoute",
 }
 
+/** Specifies what happens to traffic that wants the tunnel and is for a destination the server does not route: outside its ranges, or of an IP version it does not carry. */
 export enum SplitUnsupportedIpMode {
     Exclude = "Exclude",
     Block = "Block",
 }
 
+/** Represents what always-on does where the app keeps it itself (App): why it waits and until when, or why it has stopped. */
 export class AlwaysOnState implements IAlwaysOnState {
+    /** Gets where always-on stands. */
     status!: AlwaysOnStatus;
+    /** Gets when it connects again, while it waits, or null. */
     retryTime!: Date | null;
+    /** Gets the failure it waits after, or the one that stopped it; null where a person's disconnect stopped it. */
     error!: ApiError | null;
 
     constructor(data?: IAlwaysOnState) {
@@ -6167,12 +6982,17 @@ export class AlwaysOnState implements IAlwaysOnState {
     }
 }
 
+/** Represents what always-on does where the app keeps it itself (App): why it waits and until when, or why it has stopped. */
 export interface IAlwaysOnState {
+    /** Gets where always-on stands. */
     status: AlwaysOnStatus;
+    /** Gets when it connects again, while it waits, or null. */
     retryTime: Date | null;
+    /** Gets the failure it waits after, or the one that stopped it; null where a person's disconnect stopped it. */
     error: ApiError | null;
 }
 
+/** Specifies where always-on stands, where the app keeps it itself. */
 export enum AlwaysOnStatus {
     Off = "Off",
     On = "On",
@@ -6180,30 +7000,62 @@ export enum AlwaysOnStatus {
     Stopped = "Stopped",
 }
 
+/** Represents the person's settings, which the app saves. */
 export class UserSettings implements IUserSettings {
+    /** Gets or sets a value indicating whether the person has accepted the license agreement. */
     isLicenseAccepted!: boolean;
-    isTcpProxyPrompted!: boolean;
+    /** Gets or sets a value indicating whether the app has asked the person about the TCP forwarding. */
+    isTcpForwardingPrompted!: boolean;
+    /** Gets or sets a value indicating whether the app has offered the person the Quick Launch. */
     isQuickLaunchPrompted!: boolean;
+    /** Gets or sets the language the person chose for the UI, by its culture name, or null for the system's. */
     cultureCode?: string | null;
+    /** Gets or sets the client's country as the server last reported it, which the app takes as its region, or null for the device's. */
     countryCode?: string | null;
+    /** Gets or sets the current VPN profile's ID, or null. */
     vpnProfileId?: string | null;
+    /** Gets or sets a value indicating whether the app keeps the VPN on at all times, where it keeps always-on itself
+(App): the service connects when it starts, before anyone signs in,
+and again after a failure. */
     alwaysOn!: boolean;
-    killSwitch!: boolean;
-    killSwitchLockdown!: boolean;
+    /** Gets or sets the kill switch's level, where the app keeps a kill switch of its own (IsKillSwitchSupported). */
+    killSwitch!: KillSwitchMode;
+    /** Gets or sets the split tunneling's settings. */
     splitTunneling!: SplitTunnelingSettings;
+    /** Gets or sets the protocol of the tunnel's packet channels. The default is Tcp. */
     channelProtocol!: ChannelProtocol;
+    /** Gets or sets a value indicating whether the client drops the UDP bound for the tunnel, but to DNS's ports; it
+applies only while the client forwards IPv4 TCP, and then to either IP version. */
     dropUdp!: boolean;
-    useTcpProxy!: boolean;
+    /** Gets or sets a value indicating whether the client ends each TCP connection on the device and has the server
+open a new one, rather than carrying its packets. */
+    useTcpForwarding!: boolean;
+    /** Gets or sets a value indicating whether the client drops the QUIC bound for the tunnel, UDP to ports 80 and 443,
+so apps turn to TCP; it applies only while the client forwards IPv4 TCP, and then to either IP version. */
     dropQuic!: boolean;
+    /** Gets or sets a value indicating whether the person lets their use be reported anonymously, by the app and through
+the VPN's session. The default is true. */
     allowAnonymousTracker!: boolean;
+    /** Gets or sets a value indicating whether the person has answered the usage-data question, which is asked where the law wants a yes first; until then, the switch's default counts for nothing there. */
     isAnonymousTrackerPrompted!: boolean;
+    /** Gets or sets text of debug switches the developer gave, such as /disable-WebSocket, or
+null. */
     debugData1?: string | null;
+    /** Gets or sets a second text of debug switches the developer gave, or null. */
     debugData2?: string | null;
+    /** Gets or sets a value indicating whether the log redacts identifying values: addresses, endpoints, networks, IDs and host names. The default is true; a debug build logs them, and the app's own options may require the redaction. */
     logAnonymous!: boolean;
+    /** Gets or sets how the client orders the server token's addresses. The default is
+Auto, the token's own strategy. */
     endPointStrategy!: EndPointStrategy;
+    /** Gets or sets which DNS servers the VPN uses. */
     dnsMode!: DnsMode;
+    /** Gets or sets the proxy settings. */
     proxySettings!: AppProxySettings;
+    /** Gets or sets JSON a UI keeps of its own, which the app does not read, or null. */
     customData?: any | null;
+    /** Gets or sets the person's own DNS servers, which AdapterDns uses; none by default, and a
+null one reads as none. */
     dnsServers!: string[];
 
     constructor(data?: IUserSettings) {
@@ -6223,18 +7075,17 @@ export class UserSettings implements IUserSettings {
     init(_data?: any) {
         if (_data) {
             this.isLicenseAccepted = _data["isLicenseAccepted"] !== undefined ? _data["isLicenseAccepted"] : null as any;
-            this.isTcpProxyPrompted = _data["isTcpProxyPrompted"] !== undefined ? _data["isTcpProxyPrompted"] : null as any;
+            this.isTcpForwardingPrompted = _data["isTcpForwardingPrompted"] !== undefined ? _data["isTcpForwardingPrompted"] : null as any;
             this.isQuickLaunchPrompted = _data["isQuickLaunchPrompted"] !== undefined ? _data["isQuickLaunchPrompted"] : null as any;
             this.cultureCode = _data["cultureCode"] !== undefined ? _data["cultureCode"] : null as any;
             this.countryCode = _data["countryCode"] !== undefined ? _data["countryCode"] : null as any;
             this.vpnProfileId = _data["vpnProfileId"] !== undefined ? _data["vpnProfileId"] : null as any;
             this.alwaysOn = _data["alwaysOn"] !== undefined ? _data["alwaysOn"] : null as any;
             this.killSwitch = _data["killSwitch"] !== undefined ? _data["killSwitch"] : null as any;
-            this.killSwitchLockdown = _data["killSwitchLockdown"] !== undefined ? _data["killSwitchLockdown"] : null as any;
             this.splitTunneling = _data["splitTunneling"] ? SplitTunnelingSettings.fromJS(_data["splitTunneling"]) : new SplitTunnelingSettings();
             this.channelProtocol = _data["channelProtocol"] !== undefined ? _data["channelProtocol"] : null as any;
             this.dropUdp = _data["dropUdp"] !== undefined ? _data["dropUdp"] : null as any;
-            this.useTcpProxy = _data["useTcpProxy"] !== undefined ? _data["useTcpProxy"] : null as any;
+            this.useTcpForwarding = _data["useTcpForwarding"] !== undefined ? _data["useTcpForwarding"] : null as any;
             this.dropQuic = _data["dropQuic"] !== undefined ? _data["dropQuic"] : null as any;
             this.allowAnonymousTracker = _data["allowAnonymousTracker"] !== undefined ? _data["allowAnonymousTracker"] : null as any;
             this.isAnonymousTrackerPrompted = _data["isAnonymousTrackerPrompted"] !== undefined ? _data["isAnonymousTrackerPrompted"] : null as any;
@@ -6266,18 +7117,17 @@ export class UserSettings implements IUserSettings {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["isLicenseAccepted"] = this.isLicenseAccepted !== undefined ? this.isLicenseAccepted : null as any;
-        data["isTcpProxyPrompted"] = this.isTcpProxyPrompted !== undefined ? this.isTcpProxyPrompted : null as any;
+        data["isTcpForwardingPrompted"] = this.isTcpForwardingPrompted !== undefined ? this.isTcpForwardingPrompted : null as any;
         data["isQuickLaunchPrompted"] = this.isQuickLaunchPrompted !== undefined ? this.isQuickLaunchPrompted : null as any;
         data["cultureCode"] = this.cultureCode !== undefined ? this.cultureCode : null as any;
         data["countryCode"] = this.countryCode !== undefined ? this.countryCode : null as any;
         data["vpnProfileId"] = this.vpnProfileId !== undefined ? this.vpnProfileId : null as any;
         data["alwaysOn"] = this.alwaysOn !== undefined ? this.alwaysOn : null as any;
         data["killSwitch"] = this.killSwitch !== undefined ? this.killSwitch : null as any;
-        data["killSwitchLockdown"] = this.killSwitchLockdown !== undefined ? this.killSwitchLockdown : null as any;
         data["splitTunneling"] = this.splitTunneling ? this.splitTunneling.toJSON() : null as any;
         data["channelProtocol"] = this.channelProtocol !== undefined ? this.channelProtocol : null as any;
         data["dropUdp"] = this.dropUdp !== undefined ? this.dropUdp : null as any;
-        data["useTcpProxy"] = this.useTcpProxy !== undefined ? this.useTcpProxy : null as any;
+        data["useTcpForwarding"] = this.useTcpForwarding !== undefined ? this.useTcpForwarding : null as any;
         data["dropQuic"] = this.dropQuic !== undefined ? this.dropQuic : null as any;
         data["allowAnonymousTracker"] = this.allowAnonymousTracker !== undefined ? this.allowAnonymousTracker : null as any;
         data["isAnonymousTrackerPrompted"] = this.isAnonymousTrackerPrompted !== undefined ? this.isAnonymousTrackerPrompted : null as any;
@@ -6297,45 +7147,101 @@ export class UserSettings implements IUserSettings {
     }
 }
 
+/** Represents the person's settings, which the app saves. */
 export interface IUserSettings {
+    /** Gets or sets a value indicating whether the person has accepted the license agreement. */
     isLicenseAccepted: boolean;
-    isTcpProxyPrompted: boolean;
+    /** Gets or sets a value indicating whether the app has asked the person about the TCP forwarding. */
+    isTcpForwardingPrompted: boolean;
+    /** Gets or sets a value indicating whether the app has offered the person the Quick Launch. */
     isQuickLaunchPrompted: boolean;
+    /** Gets or sets the language the person chose for the UI, by its culture name, or null for the system's. */
     cultureCode?: string | null;
+    /** Gets or sets the client's country as the server last reported it, which the app takes as its region, or null for the device's. */
     countryCode?: string | null;
+    /** Gets or sets the current VPN profile's ID, or null. */
     vpnProfileId?: string | null;
+    /** Gets or sets a value indicating whether the app keeps the VPN on at all times, where it keeps always-on itself
+(App): the service connects when it starts, before anyone signs in,
+and again after a failure. */
     alwaysOn: boolean;
-    killSwitch: boolean;
-    killSwitchLockdown: boolean;
+    /** Gets or sets the kill switch's level, where the app keeps a kill switch of its own (IsKillSwitchSupported). */
+    killSwitch: KillSwitchMode;
+    /** Gets or sets the split tunneling's settings. */
     splitTunneling: SplitTunnelingSettings;
+    /** Gets or sets the protocol of the tunnel's packet channels. The default is Tcp. */
     channelProtocol: ChannelProtocol;
+    /** Gets or sets a value indicating whether the client drops the UDP bound for the tunnel, but to DNS's ports; it
+applies only while the client forwards IPv4 TCP, and then to either IP version. */
     dropUdp: boolean;
-    useTcpProxy: boolean;
+    /** Gets or sets a value indicating whether the client ends each TCP connection on the device and has the server
+open a new one, rather than carrying its packets. */
+    useTcpForwarding: boolean;
+    /** Gets or sets a value indicating whether the client drops the QUIC bound for the tunnel, UDP to ports 80 and 443,
+so apps turn to TCP; it applies only while the client forwards IPv4 TCP, and then to either IP version. */
     dropQuic: boolean;
+    /** Gets or sets a value indicating whether the person lets their use be reported anonymously, by the app and through
+the VPN's session. The default is true. */
     allowAnonymousTracker: boolean;
+    /** Gets or sets a value indicating whether the person has answered the usage-data question, which is asked where the law wants a yes first; until then, the switch's default counts for nothing there. */
     isAnonymousTrackerPrompted: boolean;
+    /** Gets or sets text of debug switches the developer gave, such as /disable-WebSocket, or
+null. */
     debugData1?: string | null;
+    /** Gets or sets a second text of debug switches the developer gave, or null. */
     debugData2?: string | null;
+    /** Gets or sets a value indicating whether the log redacts identifying values: addresses, endpoints, networks, IDs and host names. The default is true; a debug build logs them, and the app's own options may require the redaction. */
     logAnonymous: boolean;
+    /** Gets or sets how the client orders the server token's addresses. The default is
+Auto, the token's own strategy. */
     endPointStrategy: EndPointStrategy;
+    /** Gets or sets which DNS servers the VPN uses. */
     dnsMode: DnsMode;
+    /** Gets or sets the proxy settings. */
     proxySettings: AppProxySettings;
+    /** Gets or sets JSON a UI keeps of its own, which the app does not read, or null. */
     customData?: any | null;
+    /** Gets or sets the person's own DNS servers, which AdapterDns uses; none by default, and a
+null one reads as none. */
     dnsServers: string[];
 }
 
+/** Specifies the kill switch's level, where the app keeps a kill switch of its own. */
+export enum KillSwitchMode {
+    Off = "Off",
+    UntilDisconnect = "UntilDisconnect",
+    Lockdown = "Lockdown",
+}
+
+/** Represents the split tunneling's settings, as the person stored them. */
 export class SplitTunnelingSettings implements ISplitTunnelingSettings {
+    /** Gets or sets a value indicating whether splitting is allowed at all. The default is true. */
     enabled!: boolean;
+    /** Gets or sets the split by app's mode. The default is All. */
     appMode!: SplitAppMode;
+    /** Gets or sets the apps the split by app names, by their IDs. The default is none. */
     apps!: string[];
+    /** Gets or sets the split by country's mode. The default is IncludeAll. */
     countryMode!: SplitCountryMode;
+    /** Gets or sets the countries the split by country names, by their codes. The default is none. */
     countries!: string[];
+    /** Gets or sets a value indicating whether the app's own split by IP ranges is on. */
     useIpViaApp!: boolean;
+    /** Gets or sets a value indicating whether the device adapter's split by IP ranges is on. */
     useIpViaDevice!: boolean;
+    /** Gets or sets a value indicating whether the split by domain is on. */
     useDomain!: boolean;
+    /** Gets or sets a value indicating whether the local network goes outside the tunnel. */
     useLocalNetwork!: boolean;
+    /** Gets or sets the DNS's split mode. The default is IncludeAll. */
     dnsMode!: SplitDnsMode;
+    /** Gets or sets what happens to a destination the server does not route: Exclude
+bypasses it, Block fails closed. The default is
+Exclude. */
     unroutedIpMode!: SplitUnsupportedIpMode;
+    /** Gets or sets what happens to IPv6 where the server cannot carry it: Block keeps
+it inside, dead but private, and Exclude lets the system route it, working but
+visible to WebRTC and STUN probes. The default is Block. */
     unsupportedIpV6Mode!: SplitUnsupportedIpMode;
 
     constructor(data?: ISplitTunnelingSettings) {
@@ -6415,27 +7321,46 @@ export class SplitTunnelingSettings implements ISplitTunnelingSettings {
     }
 }
 
+/** Represents the split tunneling's settings, as the person stored them. */
 export interface ISplitTunnelingSettings {
+    /** Gets or sets a value indicating whether splitting is allowed at all. The default is true. */
     enabled: boolean;
+    /** Gets or sets the split by app's mode. The default is All. */
     appMode: SplitAppMode;
+    /** Gets or sets the apps the split by app names, by their IDs. The default is none. */
     apps: string[];
+    /** Gets or sets the split by country's mode. The default is IncludeAll. */
     countryMode: SplitCountryMode;
+    /** Gets or sets the countries the split by country names, by their codes. The default is none. */
     countries: string[];
+    /** Gets or sets a value indicating whether the app's own split by IP ranges is on. */
     useIpViaApp: boolean;
+    /** Gets or sets a value indicating whether the device adapter's split by IP ranges is on. */
     useIpViaDevice: boolean;
+    /** Gets or sets a value indicating whether the split by domain is on. */
     useDomain: boolean;
+    /** Gets or sets a value indicating whether the local network goes outside the tunnel. */
     useLocalNetwork: boolean;
+    /** Gets or sets the DNS's split mode. The default is IncludeAll. */
     dnsMode: SplitDnsMode;
+    /** Gets or sets what happens to a destination the server does not route: Exclude
+bypasses it, Block fails closed. The default is
+Exclude. */
     unroutedIpMode: SplitUnsupportedIpMode;
+    /** Gets or sets what happens to IPv6 where the server cannot carry it: Block keeps
+it inside, dead but private, and Exclude lets the system route it, working but
+visible to WebRTC and STUN probes. The default is Block. */
     unsupportedIpV6Mode: SplitUnsupportedIpMode;
 }
 
+/** Specifies the split by app's mode. */
 export enum SplitAppMode {
     All = "All",
     Exclude = "Exclude",
     Include = "Include",
 }
 
+/** Specifies how a client orders the addresses of an access key's server: those its host name resolves to, and those the access key lists. */
 export enum EndPointStrategy {
     Auto = 0,
     DnsFirst = 1,
@@ -6444,13 +7369,17 @@ export enum EndPointStrategy {
     IpOnly = 4,
 }
 
+/** Specifies which DNS servers the VPN uses. */
 export enum DnsMode {
     Default = "Default",
     AdapterDns = "AdapterDns",
 }
 
+/** Represents the proxy settings. */
 export class AppProxySettings implements IAppProxySettings {
+    /** Gets or sets which proxy the VPN connects through. The default is NoProxy. */
     mode!: AppProxyMode;
+    /** Gets the automatic update of the proxy list. */
     autoUpdateOptions!: ProxyAutoUpdateOptions;
 
     constructor(data?: IAppProxySettings) {
@@ -6487,22 +7416,38 @@ export class AppProxySettings implements IAppProxySettings {
     }
 }
 
+/** Represents the proxy settings. */
 export interface IAppProxySettings {
+    /** Gets or sets which proxy the VPN connects through. The default is NoProxy. */
     mode: AppProxyMode;
+    /** Gets the automatic update of the proxy list. */
     autoUpdateOptions: ProxyAutoUpdateOptions;
 }
 
+/** Specifies which proxy the app's VPN connects through. */
 export enum AppProxyMode {
     NoProxy = "NoProxy",
     Device = "Device",
     Manual = "Manual",
 }
 
+/** Provides the options of a managed proxy list's update from a URL. */
 export class ProxyAutoUpdateOptions implements IProxyAutoUpdateOptions {
+    /** Gets or sets the URL of the text to read proxy addresses from, or null for no update. */
     url?: string | null;
+    /** Gets or sets how often the list is downloaded, the first time as soon as the connector starts, or
+null, zero or less for no update. */
     interval?: string | null;
+    /** Gets or sets the penalty above which a used endpoint goes after the new ones when the lists are merged, or
+null for 50. */
     maxPenalty?: number | null;
+    /** Gets or sets how many endpoints the merged list keeps, or null for
+1,000. */
     maxItemCount?: number | null;
+    /** Gets or sets a value indicating whether endpoints of one host and protocol are thinned out: a merge drops a new
+endpoint whose host and protocol match a listed one whose last use succeeded, and a connection that succeeds
+disables the others of its host and protocol among those it could choose. The default is
+true. */
     removeDuplicateIps!: boolean;
 
     constructor(data?: IProxyAutoUpdateOptions) {
@@ -6542,35 +7487,72 @@ export class ProxyAutoUpdateOptions implements IProxyAutoUpdateOptions {
     }
 }
 
+/** Provides the options of a managed proxy list's update from a URL. */
 export interface IProxyAutoUpdateOptions {
+    /** Gets or sets the URL of the text to read proxy addresses from, or null for no update. */
     url?: string | null;
+    /** Gets or sets how often the list is downloaded, the first time as soon as the connector starts, or
+null, zero or less for no update. */
     interval?: string | null;
+    /** Gets or sets the penalty above which a used endpoint goes after the new ones when the lists are merged, or
+null for 50. */
     maxPenalty?: number | null;
+    /** Gets or sets how many endpoints the merged list keeps, or null for
+1,000. */
     maxItemCount?: number | null;
+    /** Gets or sets a value indicating whether endpoints of one host and protocol are thinned out: a merge drops a new
+endpoint whose host and protocol match a listed one whose last use succeeded, and a connection that succeeds
+disables the others of its host and protocol among those it could choose. The default is
+true. */
     removeDuplicateIps: boolean;
 }
 
+/** Represents a VPN profile as the UI reads it, for the client's country: the policy and the locations depend on it. */
 export class VpnProfileInfo implements IVpnProfileInfo {
+    /** Gets the VPN profile's ID. */
     vpnProfileId!: string;
+    /** Gets the VPN profile's name, as the person named it or the access key does. */
     vpnProfileName!: string;
+    /** Gets the access key's support ID, which the server's operator knows it by, or null. */
     supportId!: string | null;
+    /** Gets the text a UI keeps with the VPN profile, or null. */
     customData!: string | null;
+    /** Gets a value indicating whether the person chose a premium location. */
     isPremiumLocationSelected!: boolean;
+    /** Gets a value indicating whether the VPN profile is premium. */
     isPremium!: boolean;
+    /** Gets the access key's ID. */
     tokenId!: string;
+    /** Gets the access key's host name and server addresses, partly masked for display. */
     hostNames!: string[];
+    /** Gets a value indicating whether the access key's host name is a valid one, which a DNS lookup can find. */
     isValidHostName!: boolean;
+    /** Gets a value indicating whether the app brought the VPN profile with it, rather than the person adding it. */
     isBuiltIn!: boolean;
+    /** Gets the VPN profile's premium code, with most of it masked, or null. */
     accessCode!: string | null;
+    /** Gets the access server's refusal of the profile's premium code, until a connect succeeds or the code changes or is
+removed, or null. */
     accessCodeRefusal!: AccessCodeRefusal | null;
+    /** Gets the server locations the person may pick, for the client's country. */
     locationInfos!: ServerLocationItem[];
+    /** Gets a value indicating whether the server's policy lets the person go premium, by a premium code or a purchase. */
     canGoPremium!: boolean;
+    /** Gets a value indicating whether the server's policy offers a premium trial. */
     canTryPremium!: boolean;
+    /** Gets a value indicating whether a premium code can be typed for this VPN profile: the operator's policy allows it,
+and so does the build (AllowImportAccessCode). */
     canImportAccessCode!: boolean;
+    /** Gets a value indicating whether the premium code this device holds may be shown, as the operator's policy alone says. */
     canViewAccessCode!: boolean;
+    /** Gets the server's addresses the person gave, used instead of the access key's where enabled, or null. */
     customServerEndpoints!: string[] | null;
+    /** Gets a value indicating whether the VPN profile connects to CustomServerEndpoints. */
     isCustomServerEndpointsEnabled!: boolean;
+    /** Gets the server location a connect goes to: the one the person chose, else the automatic one, else the first; or
+null where the VPN profile has none. */
     selectedLocationInfo!: ServerLocationItem | null;
+    /** Gets the access key's policy for the client's country, or for any country, or null. */
     clientPolicy!: ClientPolicy | null;
 
     constructor(data?: IVpnProfileInfo) {
@@ -6679,43 +7661,87 @@ export class VpnProfileInfo implements IVpnProfileInfo {
     }
 }
 
+/** Represents a VPN profile as the UI reads it, for the client's country: the policy and the locations depend on it. */
 export interface IVpnProfileInfo {
+    /** Gets the VPN profile's ID. */
     vpnProfileId: string;
+    /** Gets the VPN profile's name, as the person named it or the access key does. */
     vpnProfileName: string;
+    /** Gets the access key's support ID, which the server's operator knows it by, or null. */
     supportId: string | null;
+    /** Gets the text a UI keeps with the VPN profile, or null. */
     customData: string | null;
+    /** Gets a value indicating whether the person chose a premium location. */
     isPremiumLocationSelected: boolean;
+    /** Gets a value indicating whether the VPN profile is premium. */
     isPremium: boolean;
+    /** Gets the access key's ID. */
     tokenId: string;
+    /** Gets the access key's host name and server addresses, partly masked for display. */
     hostNames: string[];
+    /** Gets a value indicating whether the access key's host name is a valid one, which a DNS lookup can find. */
     isValidHostName: boolean;
+    /** Gets a value indicating whether the app brought the VPN profile with it, rather than the person adding it. */
     isBuiltIn: boolean;
+    /** Gets the VPN profile's premium code, with most of it masked, or null. */
     accessCode: string | null;
+    /** Gets the access server's refusal of the profile's premium code, until a connect succeeds or the code changes or is
+removed, or null. */
     accessCodeRefusal: AccessCodeRefusal | null;
+    /** Gets the server locations the person may pick, for the client's country. */
     locationInfos: ServerLocationItem[];
+    /** Gets a value indicating whether the server's policy lets the person go premium, by a premium code or a purchase. */
     canGoPremium: boolean;
+    /** Gets a value indicating whether the server's policy offers a premium trial. */
     canTryPremium: boolean;
+    /** Gets a value indicating whether a premium code can be typed for this VPN profile: the operator's policy allows it,
+and so does the build (AllowImportAccessCode). */
     canImportAccessCode: boolean;
+    /** Gets a value indicating whether the premium code this device holds may be shown, as the operator's policy alone says. */
     canViewAccessCode: boolean;
+    /** Gets the server's addresses the person gave, used instead of the access key's where enabled, or null. */
     customServerEndpoints: string[] | null;
+    /** Gets a value indicating whether the VPN profile connects to CustomServerEndpoints. */
     isCustomServerEndpointsEnabled: boolean;
+    /** Gets the server location a connect goes to: the one the person chose, else the automatic one, else the first; or
+null where the VPN profile has none. */
     selectedLocationInfo: ServerLocationItem | null;
+    /** Gets the access key's policy for the client's country, or for any country, or null. */
     clientPolicy: ClientPolicy | null;
 }
 
+/** Represents what an access key's issuer offers the people of a set of countries: free and premium plans, and which locations they may pick. */
 export class ClientPolicy implements IClientPolicy {
+    /** Gets the country codes the policy is for; * stands for any country with no policy of its own. */
     ccs!: string[];
+    /** Gets the country codes of the locations free connections may use, or null. */
     free?: string[] | null;
+    /** Gets a value indicating whether only the automatic location may be picked. */
     ao!: boolean;
+    /** Gets a value indicating whether only locations of unblockable servers are offered. */
     uo!: boolean;
+    /** Gets the minutes of an ordinary connection, 0 for no limit, or null where none is offered
+(Normal). */
     n?: number | null;
+    /** Gets the minutes of an ordinary connection after a rewarded ad, 0 for no limit, or null where
+none is offered (NormalByRewardedAd). */
     nbr?: number | null;
+    /** Gets the minutes of a premium trial, 0 for no limit, or null where none is offered
+(PremiumByTrial). */
     pbt?: number | null;
+    /** Gets how much premium trial a day allows, or null for no daily limit. */
     pbtdl?: string | null;
+    /** Gets the minutes of premium a rewarded ad gives, 0 for no limit, or null where none is offered
+(PremiumByRewardedAd). */
     pbr?: number | null;
+    /** Gets a value indicating whether a premium session can be extended by a rewarded ad; no client or server acts on
+it yet. */
     pbe!: boolean;
+    /** Gets a value indicating whether premium can be bought. */
     pbp!: boolean;
+    /** Gets a value indicating whether a premium code can be entered. */
     pbc!: boolean;
+    /** Gets the shop this operator sells through, or null. */
     pur_url?: string | null;
 
     constructor(data?: IClientPolicy) {
@@ -6796,24 +7822,47 @@ export class ClientPolicy implements IClientPolicy {
     }
 }
 
+/** Represents what an access key's issuer offers the people of a set of countries: free and premium plans, and which locations they may pick. */
 export interface IClientPolicy {
+    /** Gets the country codes the policy is for; * stands for any country with no policy of its own. */
     ccs: string[];
+    /** Gets the country codes of the locations free connections may use, or null. */
     free?: string[] | null;
+    /** Gets a value indicating whether only the automatic location may be picked. */
     ao: boolean;
+    /** Gets a value indicating whether only locations of unblockable servers are offered. */
     uo: boolean;
+    /** Gets the minutes of an ordinary connection, 0 for no limit, or null where none is offered
+(Normal). */
     n?: number | null;
+    /** Gets the minutes of an ordinary connection after a rewarded ad, 0 for no limit, or null where
+none is offered (NormalByRewardedAd). */
     nbr?: number | null;
+    /** Gets the minutes of a premium trial, 0 for no limit, or null where none is offered
+(PremiumByTrial). */
     pbt?: number | null;
+    /** Gets how much premium trial a day allows, or null for no daily limit. */
     pbtdl?: string | null;
+    /** Gets the minutes of premium a rewarded ad gives, 0 for no limit, or null where none is offered
+(PremiumByRewardedAd). */
     pbr?: number | null;
+    /** Gets a value indicating whether a premium session can be extended by a rewarded ad; no client or server acts on
+it yet. */
     pbe: boolean;
+    /** Gets a value indicating whether premium can be bought. */
     pbp: boolean;
+    /** Gets a value indicating whether a premium code can be entered. */
     pbc: boolean;
+    /** Gets the shop this operator sells through, or null. */
     pur_url?: string | null;
 }
 
+/** Represents what the UI gives the app (Configure). */
 export class ConfigParams implements IConfigParams {
+    /** Gets the languages the UI offers, by their culture names. The default is none. */
     availableCultures!: string[];
+    /** Gets the UI's own words for the app's own text, keyed as the locale files key them (CONNECT), in the language
+the UI shows, or null; a key left out takes the app's built-in word. */
     strings?: { [key: string]: string; } | null;
 
     constructor(data?: IConfigParams) {
@@ -6876,14 +7925,22 @@ export class ConfigParams implements IConfigParams {
     }
 }
 
+/** Represents what the UI gives the app (Configure). */
 export interface IConfigParams {
+    /** Gets the languages the UI offers, by their culture names. The default is none. */
     availableCultures: string[];
+    /** Gets the UI's own words for the app's own text, keyed as the locale files key them (CONNECT), in the language
+the UI shows, or null; a key left out takes the app's built-in word. */
     strings?: { [key: string]: string; } | null;
 }
 
+/** Represents the IP ranges of the app's own split tunneling, as text. */
 export class SplitIpsViaApp implements ISplitIpsViaApp {
+    /** Gets or sets the ranges that go through the tunnel, one per line. */
     includes!: string;
+    /** Gets or sets the ranges that go outside the tunnel, one per line. */
     excludes!: string;
+    /** Gets or sets the ranges that are blocked, one per line. */
     blocks!: string;
 
     constructor(data?: ISplitIpsViaApp) {
@@ -6919,14 +7976,21 @@ export class SplitIpsViaApp implements ISplitIpsViaApp {
     }
 }
 
+/** Represents the IP ranges of the app's own split tunneling, as text. */
 export interface ISplitIpsViaApp {
+    /** Gets or sets the ranges that go through the tunnel, one per line. */
     includes: string;
+    /** Gets or sets the ranges that go outside the tunnel, one per line. */
     excludes: string;
+    /** Gets or sets the ranges that are blocked, one per line. */
     blocks: string;
 }
 
+/** Represents the IP ranges the device's VPN adapter takes or leaves, as text. */
 export class SplitIpsViaDevice implements ISplitIpsViaDevice {
+    /** Gets or sets the ranges the adapter takes into the tunnel, one per line. */
     includes!: string;
+    /** Gets or sets the ranges the adapter leaves outside the tunnel, one per line. */
     excludes!: string;
 
     constructor(data?: ISplitIpsViaDevice) {
@@ -6960,14 +8024,21 @@ export class SplitIpsViaDevice implements ISplitIpsViaDevice {
     }
 }
 
+/** Represents the IP ranges the device's VPN adapter takes or leaves, as text. */
 export interface ISplitIpsViaDevice {
+    /** Gets or sets the ranges the adapter takes into the tunnel, one per line. */
     includes: string;
+    /** Gets or sets the ranges the adapter leaves outside the tunnel, one per line. */
     excludes: string;
 }
 
+/** Represents the domains of the split tunneling, as text. */
 export class SplitDomains implements ISplitDomains {
+    /** Gets or sets the domains that go through the tunnel, one per line. */
     includes!: string;
+    /** Gets or sets the domains that go outside the tunnel, one per line. */
     excludes!: string;
+    /** Gets or sets the domains that are blocked, one per line. */
     blocks!: string;
 
     constructor(data?: ISplitDomains) {
@@ -7003,12 +8074,17 @@ export class SplitDomains implements ISplitDomains {
     }
 }
 
+/** Represents the domains of the split tunneling, as text. */
 export interface ISplitDomains {
+    /** Gets or sets the domains that go through the tunnel, one per line. */
     includes: string;
+    /** Gets or sets the domains that go outside the tunnel, one per line. */
     excludes: string;
+    /** Gets or sets the domains that are blocked, one per line. */
     blocks: string;
 }
 
+/** Specifies what the person asks for when they connect: a plain connection, one unlocked by watching an ad, a trial of premium, or only the server's status. */
 export enum ConnectPlanId {
     Normal = "Normal",
     NormalByRewardedAd = "NormalByRewardedAd",
@@ -7017,9 +8093,13 @@ export enum ConnectPlanId {
     Status = "Status",
 }
 
+/** Represents an app installed on the device, as the split tunneling by app shows it. */
 export class DeviceAppInfo implements IDeviceAppInfo {
+    /** Gets the app's ID, as its package name on Android. */
     appId!: string;
+    /** Gets the app's name. */
     appName!: string;
+    /** Gets the app's icon, a PNG in Base64. */
     iconPng!: string;
 
     constructor(data?: IDeviceAppInfo) {
@@ -7055,18 +8135,24 @@ export class DeviceAppInfo implements IDeviceAppInfo {
     }
 }
 
+/** Represents an app installed on the device, as the split tunneling by app shows it. */
 export interface IDeviceAppInfo {
+    /** Gets the app's ID, as its package name on Android. */
     appId: string;
+    /** Gets the app's name. */
     appName: string;
+    /** Gets the app's icon, a PNG in Base64. */
     iconPng: string;
 }
 
+/** Specifies what a check the person asked for found: the update, which the store's own screen or the feed's notice shows; nothing newer; or no answer to tell either, a store out of reach included. */
 export enum VersionCheckResult {
     Failed = "Failed",
     Latest = "Latest",
     UpdateAvailable = "UpdateAvailable",
 }
 
+/** Specifies an error the app's API names: each stands for the exception class whose name an API error carries. */
 export enum ExceptionType {
     NoErrorFound = "NoErrorFoundException",
     Maintenance = "MaintenanceException",
@@ -7091,11 +8177,15 @@ export enum ExceptionType {
     AdBlocker = "AdBlockerException",
     RequestQuickLaunch = "RequestQuickLaunchException",
     VpnServiceRevoked = "VpnServiceRevokedException",
+    SplitEntry = "SplitEntryException",
     Billing = "BillingException",
 }
 
+/** Represents the person's rating of the app. */
 export class AppUserReview implements IAppUserReview {
+    /** Gets or sets the rating, as the app's rating dialog gives it. */
     rating!: number;
+    /** Gets or sets the person's text, which may be empty. */
     reviewText!: string;
 
     constructor(data?: IAppUserReview) {
@@ -7129,20 +8219,32 @@ export class AppUserReview implements IAppUserReview {
     }
 }
 
+/** Represents the person's rating of the app. */
 export interface IAppUserReview {
+    /** Gets or sets the rating, as the app's rating dialog gives it. */
     rating: number;
+    /** Gets or sets the person's text, which may be empty. */
     reviewText: string;
 }
 
+/** Specifies how a shown ad ended. */
 export enum ShowAdResult {
     Closed = "Closed",
     Clicked = "Clicked",
 }
 
+/** Represents whether the app's page and API can be reached from the local network, and how, as the remote access's start and the pairing screen's poll answer it. */
 export class RemoteAccessState implements IRemoteAccessState {
+    /** Gets a value indicating whether the local network can reach the app now: a pairing screen holds it, or it is always on. */
     isActive!: boolean;
+    /** Gets a value indicating whether the listener is on for the whole run, as in a debug build or with the
+/remote-access command, so no screen holds it and closing one changes nothing. */
     isAlwaysOn!: boolean;
+    /** Gets where a phone can reach the app, best first, each with the pairing token the listener asks for at the first
+request (none where it is always on); those of the last start or refresh, none before a start. */
     urls!: string[];
+    /** Gets the devices seen on the local network within the last few seconds: a paired page polls every second, so a
+closed tab ages out, and two browsers on one phone count once. */
     connectedDevices!: string[];
 
     constructor(data?: IRemoteAccessState) {
@@ -7206,21 +8308,39 @@ export class RemoteAccessState implements IRemoteAccessState {
     }
 }
 
+/** Represents whether the app's page and API can be reached from the local network, and how, as the remote access's start and the pairing screen's poll answer it. */
 export interface IRemoteAccessState {
+    /** Gets a value indicating whether the local network can reach the app now: a pairing screen holds it, or it is always on. */
     isActive: boolean;
+    /** Gets a value indicating whether the listener is on for the whole run, as in a debug build or with the
+/remote-access command, so no screen holds it and closing one changes nothing. */
     isAlwaysOn: boolean;
+    /** Gets where a phone can reach the app, best first, each with the pairing token the listener asks for at the first
+request (none where it is always on); those of the last start or refresh, none before a start. */
     urls: string[];
+    /** Gets the devices seen on the local network within the last few seconds: a paired page polls every second, so a
+closed tab ages out, and two browsers on one phone count once. */
     connectedDevices: string[];
 }
 
+/** Represents a subscription's plan as the store prices it, in the currency the store quotes. */
 export class SubscriptionPlan implements ISubscriptionPlan {
+    /** Gets the price of each billing period. */
     basePrice!: number;
+    /** Gets the first price the person pays: the introductory price where the offer has one, else BasePrice. */
     currentPrice!: number;
+    /** Gets the billing period, as an ISO 8601 duration, as P1M. */
     period!: string;
+    /** Gets the free trial's period, as an ISO 8601 duration, or null where the offer has none. */
     trialPeriod?: string | null;
+    /** Gets the plan's opaque token, which a purchase names; only the billing provider that made it reads it. */
     planToken!: string;
+    /** Gets the currency's symbol, as $. */
     currencySymbol!: string;
+    /** Gets the currency's ISO 4217 code, as USD. */
     currencyCode!: string;
+    /** Gets the page the plan is bought on, for a store that sells on the web, which the UI opens as any link; or
+null where the purchase happens in the app. */
     checkoutUrl?: string | null;
 
     constructor(data?: ISubscriptionPlan) {
@@ -7266,18 +8386,31 @@ export class SubscriptionPlan implements ISubscriptionPlan {
     }
 }
 
+/** Represents a subscription's plan as the store prices it, in the currency the store quotes. */
 export interface ISubscriptionPlan {
+    /** Gets the price of each billing period. */
     basePrice: number;
+    /** Gets the first price the person pays: the introductory price where the offer has one, else BasePrice. */
     currentPrice: number;
+    /** Gets the billing period, as an ISO 8601 duration, as P1M. */
     period: string;
+    /** Gets the free trial's period, as an ISO 8601 duration, or null where the offer has none. */
     trialPeriod?: string | null;
+    /** Gets the plan's opaque token, which a purchase names; only the billing provider that made it reads it. */
     planToken: string;
+    /** Gets the currency's symbol, as $. */
     currencySymbol: string;
+    /** Gets the currency's ISO 4217 code, as USD. */
     currencyCode: string;
+    /** Gets the page the plan is bought on, for a store that sells on the web, which the UI opens as any link; or
+null where the purchase happens in the app. */
     checkoutUrl?: string | null;
 }
 
+/** Represents the purchase the person chose. */
 export class PurchaseParams implements IPurchaseParams {
+    /** Gets or sets the plan to buy: its opaque PlanToken, passed unchanged to the billing
+provider that made it. */
     planToken!: string;
 
     constructor(data?: IPurchaseParams) {
@@ -7309,15 +8442,26 @@ export class PurchaseParams implements IPurchaseParams {
     }
 }
 
+/** Represents the purchase the person chose. */
 export interface IPurchaseParams {
+    /** Gets or sets the plan to buy: its opaque PlanToken, passed unchanged to the billing
+provider that made it. */
     planToken: string;
 }
 
+/** Represents where the person can buy a premium plan for a VPN profile: the in-app store's plans, the server operator's own shop, or a premium code they type. */
 export class AppPurchaseOptions implements IAppPurchaseOptions {
+    /** Gets a value indicating whether the in-app store has plans to sell. */
     isStoreAvailable!: boolean;
+    /** Gets why the in-app store could not be read, or null. */
     storeError!: ApiError | null;
+    /** Gets the in-app store's plans, as the store prices them; none where it was not asked or has none. */
     subscriptionPlans!: SubscriptionPlan[];
+    /** Gets the server operator's own shop, or null where it names none or the build may not open one,
+as a store's build. */
     purchaseUrl!: string | null;
+    /** Gets a value indicating whether the person may go premium by typing a premium code: the server's policy offers
+it, and the build takes typed codes. */
     canGoPremiumByCode!: boolean;
 
     constructor(data?: IAppPurchaseOptions) {
@@ -7371,17 +8515,29 @@ export class AppPurchaseOptions implements IAppPurchaseOptions {
     }
 }
 
+/** Represents where the person can buy a premium plan for a VPN profile: the in-app store's plans, the server operator's own shop, or a premium code they type. */
 export interface IAppPurchaseOptions {
+    /** Gets a value indicating whether the in-app store has plans to sell. */
     isStoreAvailable: boolean;
+    /** Gets why the in-app store could not be read, or null. */
     storeError: ApiError | null;
+    /** Gets the in-app store's plans, as the store prices them; none where it was not asked or has none. */
     subscriptionPlans: SubscriptionPlan[];
+    /** Gets the server operator's own shop, or null where it names none or the build may not open one,
+as a store's build. */
     purchaseUrl: string | null;
+    /** Gets a value indicating whether the person may go premium by typing a premium code: the server's policy offers
+it, and the build takes typed codes. */
     canGoPremiumByCode: boolean;
 }
 
+/** Represents a saved proxy: the proxy, how it has behaved, and where it is. */
 export class AppProxyEndPointInfo implements IAppProxyEndPointInfo {
+    /** Gets or sets the proxy. */
     endPoint!: ProxyEndPoint;
+    /** Gets or sets how the proxy has behaved. */
     status!: ProxyEndPointStatus;
+    /** Gets or sets the proxy's country code, or null where it is not known. */
     countryCode!: string | null;
 
     constructor(data?: IAppProxyEndPointInfo) {
@@ -7421,20 +8577,35 @@ export class AppProxyEndPointInfo implements IAppProxyEndPointInfo {
     }
 }
 
+/** Represents a saved proxy: the proxy, how it has behaved, and where it is. */
 export interface IAppProxyEndPointInfo {
+    /** Gets or sets the proxy. */
     endPoint: ProxyEndPoint;
+    /** Gets or sets how the proxy has behaved. */
     status: ProxyEndPointStatus;
+    /** Gets or sets the proxy's country code, or null where it is not known. */
     countryCode: string | null;
 }
 
+/** Represents a proxy server: its protocol, address, credentials and whether it is used. */
 export class ProxyEndPoint implements IProxyEndPoint {
+    /** Gets the endpoint's ID: the hex MD5 hash of its protocol's name, host and port, as in
+Socks5://host:1080. The host is hashed as written, so a change of its case gives another ID. */
     id!: string;
+    /** Gets or sets a value indicating whether the endpoint is used. The default is true. */
     isEnabled!: boolean;
+    /** Gets the proxy's protocol. */
     protocol!: ProxyProtocol;
+    /** Gets the proxy's host name or IP address. */
     host!: string;
+    /** Gets the proxy's port. */
     port!: number;
+    /** Gets or sets the user name, or null. */
     username?: string | null;
+    /** Gets or sets the password, or null. */
     password?: string | null;
+    /** Gets the endpoint's URL, credentials included, as socks5://user:password@host:1080/?enabled=1. The
+query is there only for an enabled endpoint. */
     url!: string;
 
     constructor(data?: IProxyEndPoint) {
@@ -7480,17 +8651,29 @@ export class ProxyEndPoint implements IProxyEndPoint {
     }
 }
 
+/** Represents a proxy server: its protocol, address, credentials and whether it is used. */
 export interface IProxyEndPoint {
+    /** Gets the endpoint's ID: the hex MD5 hash of its protocol's name, host and port, as in
+Socks5://host:1080. The host is hashed as written, so a change of its case gives another ID. */
     id: string;
+    /** Gets or sets a value indicating whether the endpoint is used. The default is true. */
     isEnabled: boolean;
+    /** Gets the proxy's protocol. */
     protocol: ProxyProtocol;
+    /** Gets the proxy's host name or IP address. */
     host: string;
+    /** Gets the proxy's port. */
     port: number;
+    /** Gets or sets the user name, or null. */
     username?: string | null;
+    /** Gets or sets the password, or null. */
     password?: string | null;
+    /** Gets the endpoint's URL, credentials included, as socks5://user:password@host:1080/?enabled=1. The
+query is there only for an enabled endpoint. */
     url: string;
 }
 
+/** Specifies a proxy's protocol. */
 export enum ProxyProtocol {
     Socks4 = "Socks4",
     Socks5 = "Socks5",
@@ -7498,15 +8681,28 @@ export enum ProxyProtocol {
     Https = "Https",
 }
 
+/** Represents a proxy endpoint's record of use, which rates it and sets its turn in the rotation. */
 export class ProxyEndPointStatus implements IProxyEndPointStatus {
+    /** Gets or sets the endpoint's penalty: a managed connector adds 2 for each failure and 1 for each success much
+slower than the fastest endpoint's, and takes 1 off for each other success, down to 0. */
     penalty!: number;
+    /** Gets or sets the number of successes. */
     succeededCount!: number;
+    /** Gets or sets the number of failures. */
     failedCount!: number;
+    /** Gets or sets how long the last success took, or null. */
     latency?: string | null;
+    /** Gets or sets when the endpoint last succeeded, in UTC, or null. */
     lastSucceeded?: Date | null;
+    /** Gets or sets when the endpoint last failed, in UTC, or null. */
     lastFailed?: Date | null;
+    /** Gets or sets the last failure's message, or why the endpoint was disabled as a duplicate; null
+after a success. */
     errorMessage?: string | null;
+    /** Gets or sets the endpoint's place in the rotation: after each use, the connector's queue position then, plus 3
+times the penalty, plus 1; the endpoint whose place is lowest against the current position comes first. */
     queuePosition!: number;
+    /** Gets the endpoint's quality, from its penalty and its successes. */
     quality!: StatusQuality;
 
     constructor(data?: IProxyEndPointStatus) {
@@ -7554,18 +8750,32 @@ export class ProxyEndPointStatus implements IProxyEndPointStatus {
     }
 }
 
+/** Represents a proxy endpoint's record of use, which rates it and sets its turn in the rotation. */
 export interface IProxyEndPointStatus {
+    /** Gets or sets the endpoint's penalty: a managed connector adds 2 for each failure and 1 for each success much
+slower than the fastest endpoint's, and takes 1 off for each other success, down to 0. */
     penalty: number;
+    /** Gets or sets the number of successes. */
     succeededCount: number;
+    /** Gets or sets the number of failures. */
     failedCount: number;
+    /** Gets or sets how long the last success took, or null. */
     latency?: string | null;
+    /** Gets or sets when the endpoint last succeeded, in UTC, or null. */
     lastSucceeded?: Date | null;
+    /** Gets or sets when the endpoint last failed, in UTC, or null. */
     lastFailed?: Date | null;
+    /** Gets or sets the last failure's message, or why the endpoint was disabled as a duplicate; null
+after a success. */
     errorMessage?: string | null;
+    /** Gets or sets the endpoint's place in the rotation: after each use, the connector's queue position then, plus 3
+times the penalty, plus 1; the endpoint whose place is lowest against the current position comes first. */
     queuePosition: number;
+    /** Gets the endpoint's quality, from its penalty and its successes. */
     quality: StatusQuality;
 }
 
+/** Specifies a proxy endpoint's quality, from its penalty and its successes (Quality). */
 export enum StatusQuality {
     Unknown = "Unknown",
     Excellent = "Excellent",
@@ -7576,8 +8786,11 @@ export enum StatusQuality {
     Failed = "Failed",
 }
 
+/** Represents one page of a list, with the size of the whole list. */
 export class ListResultOfAppProxyEndPointInfo implements IListResultOfAppProxyEndPointInfo {
+    /** Gets the page's items. */
     items!: AppProxyEndPointInfo[];
+    /** Gets the number of items in the whole list. */
     totalCount!: number;
 
     constructor(data?: IListResultOfAppProxyEndPointInfo) {
@@ -7625,16 +8838,26 @@ export class ListResultOfAppProxyEndPointInfo implements IListResultOfAppProxyEn
     }
 }
 
+/** Represents one page of a list, with the size of the whole list. */
 export interface IListResultOfAppProxyEndPointInfo {
+    /** Gets the page's items. */
     items: AppProxyEndPointInfo[];
+    /** Gets the number of items in the whole list. */
     totalCount: number;
 }
 
+/** Provides the values a typed-in proxy's address is completed with, for the parts it leaves out; null leaves a part out, or, for the port, to the protocol's default. A scheme must come from the address or from here. */
 export class ProxyEndPointDefaults implements IProxyEndPointDefaults {
+    /** Gets or sets whether the endpoint is enabled; false marks it disabled. */
     isEnabled?: boolean | null;
+    /** Gets or sets the protocol, for an address with no scheme. */
     protocol?: ProxyProtocol | null;
+    /** Gets or sets the port, for an address with no port of its own or with its scheme's standard one, as 80 for
+http. */
     port?: number | null;
+    /** Gets or sets the user name, for an address with none. */
     username?: string | null;
+    /** Gets or sets the password, for an address with none. */
     password?: string | null;
 
     constructor(data?: IProxyEndPointDefaults) {
@@ -7674,22 +8897,39 @@ export class ProxyEndPointDefaults implements IProxyEndPointDefaults {
     }
 }
 
+/** Provides the values a typed-in proxy's address is completed with, for the parts it leaves out; null leaves a part out, or, for the port, to the protocol's default. A scheme must come from the address or from here. */
 export interface IProxyEndPointDefaults {
+    /** Gets or sets whether the endpoint is enabled; false marks it disabled. */
     isEnabled?: boolean | null;
+    /** Gets or sets the protocol, for an address with no scheme. */
     protocol?: ProxyProtocol | null;
+    /** Gets or sets the port, for an address with no port of its own or with its scheme's standard one, as 80 for
+http. */
     port?: number | null;
+    /** Gets or sets the user name, for an address with none. */
     username?: string | null;
+    /** Gets or sets the password, for an address with none. */
     password?: string | null;
 }
 
+/** Represents a change to a VPN profile: each part set changes, and each left null stays, but for what removing the premium code clears (AccessCode). */
 export class VpnProfileUpdateParams implements IVpnProfileUpdateParams {
+    /** Gets or sets the new name, or null to keep it. */
     vpnProfileName?: PatchOfString | null;
+    /** Gets or sets whether the VPN profile is a favorite, or null to keep it. */
     isFavorite?: PatchOfBoolean | null;
+    /** Gets or sets the server location chosen, or null to keep it. */
     selectedLocation?: PatchOfString | null;
+    /** Gets or sets the text a UI keeps with the VPN profile, or null to keep it. */
     customData?: PatchOfString | null;
+    /** Gets or sets whether a premium location is chosen, or null to keep it. */
     isPremiumLocationSelected?: PatchOfBoolean | null;
+    /** Gets or sets the premium code typed for the VPN profile, or null to keep the profile's; a
+signed-in account gets it uploaded. */
     accessCode?: PatchOfString | null;
+    /** Gets or sets the server's addresses the person gives, or null to keep them. */
     customServerEndpoints?: PatchOfStringOf | null;
+    /** Gets or sets whether the VPN profile connects to its own server addresses, or null to keep it. */
     isCustomServerEndpointsEnabled?: PatchOfBoolean | null;
 
     constructor(data?: IVpnProfileUpdateParams) {
@@ -7735,18 +8975,30 @@ export class VpnProfileUpdateParams implements IVpnProfileUpdateParams {
     }
 }
 
+/** Represents a change to a VPN profile: each part set changes, and each left null stays, but for what removing the premium code clears (AccessCode). */
 export interface IVpnProfileUpdateParams {
+    /** Gets or sets the new name, or null to keep it. */
     vpnProfileName?: PatchOfString | null;
+    /** Gets or sets whether the VPN profile is a favorite, or null to keep it. */
     isFavorite?: PatchOfBoolean | null;
+    /** Gets or sets the server location chosen, or null to keep it. */
     selectedLocation?: PatchOfString | null;
+    /** Gets or sets the text a UI keeps with the VPN profile, or null to keep it. */
     customData?: PatchOfString | null;
+    /** Gets or sets whether a premium location is chosen, or null to keep it. */
     isPremiumLocationSelected?: PatchOfBoolean | null;
+    /** Gets or sets the premium code typed for the VPN profile, or null to keep the profile's; a
+signed-in account gets it uploaded. */
     accessCode?: PatchOfString | null;
+    /** Gets or sets the server's addresses the person gives, or null to keep them. */
     customServerEndpoints?: PatchOfStringOf | null;
+    /** Gets or sets whether the VPN profile connects to its own server addresses, or null to keep it. */
     isCustomServerEndpointsEnabled?: PatchOfBoolean | null;
 }
 
+/** Represents a value set in a patch, so a patch can tell a property set to null from one left out, which a null Patch`1 stands for. */
 export class PatchOfString implements IPatchOfString {
+    /** Gets the value. */
     value?: string | null;
 
     constructor(data?: IPatchOfString) {
@@ -7778,11 +9030,15 @@ export class PatchOfString implements IPatchOfString {
     }
 }
 
+/** Represents a value set in a patch, so a patch can tell a property set to null from one left out, which a null Patch`1 stands for. */
 export interface IPatchOfString {
+    /** Gets the value. */
     value?: string | null;
 }
 
+/** Represents a value set in a patch, so a patch can tell a property set to null from one left out, which a null Patch`1 stands for. */
 export class PatchOfBoolean implements IPatchOfBoolean {
+    /** Gets the value. */
     value!: boolean;
 
     constructor(data?: IPatchOfBoolean) {
@@ -7814,11 +9070,15 @@ export class PatchOfBoolean implements IPatchOfBoolean {
     }
 }
 
+/** Represents a value set in a patch, so a patch can tell a property set to null from one left out, which a null Patch`1 stands for. */
 export interface IPatchOfBoolean {
+    /** Gets the value. */
     value: boolean;
 }
 
+/** Represents a value set in a patch, so a patch can tell a property set to null from one left out, which a null Patch`1 stands for. */
 export class PatchOfStringOf implements IPatchOfStringOf {
+    /** Gets the value. */
     value?: string[] | null;
 
     constructor(data?: IPatchOfStringOf) {
@@ -7861,7 +9121,9 @@ export class PatchOfStringOf implements IPatchOfStringOf {
     }
 }
 
+/** Represents a value set in a patch, so a patch can tell a property set to null from one left out, which a null Patch`1 stands for. */
 export interface IPatchOfStringOf {
+    /** Gets the value. */
     value?: string[] | null;
 }
 

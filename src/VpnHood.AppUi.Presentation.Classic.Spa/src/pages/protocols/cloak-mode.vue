@@ -7,8 +7,8 @@ const vhApp = VpnHoodApp.instance;
 
 
 onMounted(() => {
-  if (!vhApp.data.userSettings.isTcpProxyPrompted){
-    vhApp.data.userSettings.isTcpProxyPrompted = true;
+  if (!vhApp.data.userSettings.isTcpForwardingPrompted){
+    vhApp.data.userSettings.isTcpForwardingPrompted = true;
     vhApp.saveUserSetting();
   }
 })

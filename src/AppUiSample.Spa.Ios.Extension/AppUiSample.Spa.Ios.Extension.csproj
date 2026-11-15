@@ -30,6 +30,6 @@
 
 	<ItemGroup>
 		<!-- The tunnel itself; this project adds only the class iOS starts. -->
-		<PackageReference Include="VpnHood.Core.Client.Devices.Ios" Version="$(VhPackageVersion)" />
+		<PackageReference Include="VpnHood.Core.Client.VpnServices.Host.Ios" Version="$(VhPackageVersion)" />
 	</ItemGroup>
 </Project>

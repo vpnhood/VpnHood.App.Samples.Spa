@@ -3,7 +3,7 @@ import SplitDomainInput from '@/components/SplitTunneling/SplitDomainInput.vue';
 import SplitTunnelingDisabledAlert from '@/components/SplitTunneling/SplitTunnelingDisabledAlert.vue';
 import AppBar from '@/components/AppBar.vue';
 import { VpnHoodApp } from '@/services/VpnHoodApp';
-import { AppFeature, SplitDomains, TcpProxyUsageReason } from '@/services/VpnHood.Client.Api';
+import { AppFeature, SplitDomains, TcpForwardingLockReason } from '@/services/VpnHood.Client.Api';
 import FeaturePageLayout from '@/components/Settings/FeaturePageLayout.vue';
 import SettingsToggleItem from '@/components/Settings/SettingsToggleItem.vue';
 import { computed, onMounted, ref } from 'vue';
@@ -27,7 +27,7 @@ const showRevertButton = ref<boolean>(false);
 let savedDomains = createNormalizedSplitDomains();
 
 const isDomainFilterAffectedByServer = computed<boolean>(
-  () => vhApp.data.state.tcpProxyUsageReason === TcpProxyUsageReason.ServerRequiredOff
+  () => vhApp.data.state.tcpForwardingLockReason === TcpForwardingLockReason.ServerRequiredOff
 );
 
 const isEnabled = computed<boolean>({
