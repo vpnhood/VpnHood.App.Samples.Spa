@@ -16,6 +16,7 @@ export interface ShowErrorActions {
 interface ShowErrorOptions {
   ignoreMessage?: boolean,
   localeKey?: string,
+  localeParams?: Record<string, unknown>,
   text?: string,
   action?: ShowErrorActions
 }
@@ -36,7 +37,7 @@ export class ErrorHandler {
 
     // Translated message for show to user
     const userErrorMessage = errorOptions.localeKey ?
-      (i18n.global.t(errorOptions.localeKey) + text) :
+      (i18n.global.t(errorOptions.localeKey, errorOptions.localeParams ?? {}) + text) :
       text;
 
     // Private DNS error
@@ -173,8 +174,12 @@ export class ErrorHandler {
 
       // Store billing failures arrive store-agnostic: every billing provider maps its store's
       // own codes into BillingErrorCode before anything crosses the client API.
-      case 'BillingException':
+      case ExceptionType.Billing:
         return this.billingExceptionHandler(err);
+
+      // A split tunneling list refused an entry when it was saved
+      case ExceptionType.SplitEntry:
+        return this.splitEntryExceptionHandler(err);
 
       case 'HttpRequestException':
         return { text: err.message };
@@ -273,6 +278,25 @@ export class ErrorHandler {
         return { text: err.message ?? err };
     }
 
+  }
+
+  // The entry and why it was refused ride in the error's data (Entry, and Reason: a SplitEntryError's
+  // name), so the refusal is said in the person's language with the entry it names.
+  private static splitEntryExceptionHandler(err: ApiException): ShowErrorOptions {
+    const entry = err.data?.Entry as string | undefined;
+    if (entry === undefined)
+      return { text: err.message };
+
+    switch (err.data?.Reason) {
+      case 'Asterisk':
+        return { localeKey: 'SPLIT_DOMAIN_ASTERISK_ERROR', localeParams: { entry } };
+
+      case 'InvalidIpRange':
+        return { localeKey: 'SPLIT_IP_INVALID_ERROR', localeParams: { entry } };
+
+      default:
+        return { text: err.message };
+    }
   }
 
   // Branches only on the store-agnostic BillingErrorCode; which store failed, and how it spells
