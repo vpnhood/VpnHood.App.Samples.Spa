@@ -5,7 +5,7 @@
 - Don't use inline styles.
 - Follow the existing code style.
 - Localize all user-facing strings (i18n). The words are written and translated in the asset store,
-  vpnhood/VpnHood.AppUi.Assets.Classic (the main repo's `src/AppUi/VpnHood.AppUi.Assets.Classic`; its
+  vpnhood/VpnHood.AppUi.Assets.Classic (the main repo's `src/libs/AppUi/VpnHood.AppUi.Assets.Classic`; its
   README, "The words"): a new string goes in its `assets/locales/en.json`, is translated there into
   every language, and `_copy-words-from-store.ps1` copies the words here.
 - Never edit `src/locales/*.json` or `src/content/`: they are that store's copy, and the next copy
