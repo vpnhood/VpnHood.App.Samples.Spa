@@ -79,6 +79,7 @@ export class ErrorHandler {
 
       // Could not connect to any server (premium cannot solve this)
       case ExceptionType.UnreachableServer:
+      case ExceptionType.EndPointDiscovery:
         return { localeKey: 'UNREACHABLE_SERVER_MESSAGE', action: { showDiagnose: true } };
 
       case ExceptionType.UnreachableServerLocation:
@@ -156,6 +157,7 @@ export class ErrorHandler {
 
       // Currently happened only for Rewarded Ad
       case ExceptionType.ShowAd:
+      case ExceptionType.Ad:
         return { localeKey: 'REWARDED_AD_SHOW_ERROR_MSG' };
 
       case ExceptionType.AdBlocker:
