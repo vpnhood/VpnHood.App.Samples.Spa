@@ -26,7 +26,7 @@ async function main(): Promise<void> {
     const app = createApp(App);
 
     // Set the app theme
-    vuetify.theme.change(vpnHoodApp.data.features.uiTheme);
+    vuetify.theme.change(vpnHoodApp.data.descriptor.uiTheme);
 
     // Set the default UI language. Its messages live in their own chunk, so they must arrive before
     // the app mounts — otherwise the first paint is in English and then snaps to the real language.

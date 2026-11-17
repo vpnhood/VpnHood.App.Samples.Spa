@@ -61,10 +61,10 @@ export async function loadContentDocument(name: string, languageCode: string): P
  * before a model reads it (maskPatterns) and restores it after.
  */
 function fillPlaceholders(text: string, encode: (value: string) => string): string {
-  const features = VpnHoodApp.instance.data.features;
+  const descriptor = VpnHoodApp.instance.data.descriptor;
   return text
-    .replaceAll('{appName}', encode(features.appName))
-    .replaceAll('{companyName}', encode(features.companyName));
+    .replaceAll('{appName}', encode(descriptor.appName))
+    .replaceAll('{companyName}', encode(descriptor.companyName));
 }
 
 function escapeHtml(value: string): string {

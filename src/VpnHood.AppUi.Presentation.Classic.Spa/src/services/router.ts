@@ -37,7 +37,7 @@ router.beforeEach((to, from) => {
 // Update document title after navigation. Dont change the page title in beforeEach
 router.afterEach((to) => {
   // Add the app name to the page title
-  const appName = VpnHoodApp.instance.data.features.appName;
+  const appName = VpnHoodApp.instance.data.descriptor.appName;
   document.title = `${to.meta.title} - ${appName}`;
 });
 

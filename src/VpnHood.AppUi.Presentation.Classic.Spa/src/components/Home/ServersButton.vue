@@ -31,13 +31,13 @@ function getActiveServerNameOrLocation(): string {
 
 function buttonClickHandler() {
     // This is a special case that should not happen
-    if (!vhApp.data.features.isAddAccessKeySupported && vhApp.data.vpnProfileInfos.length== 0) {
+    if (!vhApp.data.descriptor.isAddAccessKeySupported && vhApp.data.vpnProfileInfos.length== 0) {
       vhApp.showErrorMessage(locale('NO_VPN_PROFILE_AVAILABLE'));
       return;
     }
 
     // The server does not have a list, and only one country is available
-    if (!vhApp.data.features.isAddAccessKeySupported &&
+    if (!vhApp.data.descriptor.isAddAccessKeySupported &&
       vhApp.data.vpnProfileInfos.length == 1 &&
       vhApp.data.vpnProfileInfos[0].locationInfos.length < 2) {
       vhApp.showErrorMessage(locale('NO_ADDITIONAL_LOCATION_AVAILABLE'));

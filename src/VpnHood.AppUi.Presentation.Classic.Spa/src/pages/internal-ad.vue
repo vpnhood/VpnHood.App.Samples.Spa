@@ -68,7 +68,7 @@ function handleVisibilityChange() {
 async function internalAdDismissed(learnMore: boolean, adError: string | null = null) {
 
   // If the video is still playing and debug mode is not enabled, don't allow navigation
-  if (remainingTimeSecond.value > 0 && !vhApp.data.features.isDebugMode)
+  if (remainingTimeSecond.value > 0 && !vhApp.data.descriptor.isDebugMode)
     return;
 
   allowLeavePage.value = true;

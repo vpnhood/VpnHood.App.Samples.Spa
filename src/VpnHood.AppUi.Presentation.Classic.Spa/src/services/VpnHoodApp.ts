@@ -158,8 +158,8 @@ export class VpnHoodApp {
     // Publish only real changes, per field — same reasoning as in reloadState. A save bumps
     // configTime, which lands here on the next poll; the fetched settings then equal what the UI
     // already shows, and republishing them re-rendered every settings reader right after each save.
-    if (JSON.stringify(appInfo.descriptor) !== JSON.stringify(this.data.features))
-      this.data.features = appInfo.descriptor;
+    if (JSON.stringify(appInfo.descriptor) !== JSON.stringify(this.data.descriptor))
+      this.data.descriptor = appInfo.descriptor;
     
     const userSettingsJson = JSON.stringify(appInfo.userSettings);
     if (userSettingsJson !== JSON.stringify(this.data.userSettings))
@@ -225,7 +225,7 @@ export class VpnHoodApp {
   }
 
   public getAppVersion(isFull: boolean): string {
-    const fullVersion: string = this.data.features.version;
+    const fullVersion: string = this.data.descriptor.version;
     return isFull ? fullVersion.substring(0, fullVersion.lastIndexOf('.')) : fullVersion.split('.')[2];
   }
 
@@ -335,17 +335,17 @@ export class VpnHoodApp {
   // One built-in profile, called "location", against a list of servers the user adds keys for:
   // the list is fixed exactly when no key can be added.
   public isSingleProfileMode(): boolean {
-    return !this.data.features.isAddAccessKeySupported;
+    return !this.data.descriptor.isAddAccessKeySupported;
   }
 
   // Decided entirely by the app (AppDescriptor) - never by which product the SPA thinks it is.
   // Null means the build ships no such document: hide the link, never guess an address.
   public privacyPolicyUrl(): string | null {
-    return this.data.features.links.privacyPolicy ?? null;
+    return this.data.descriptor.links.privacyPolicy ?? null;
   }
 
   public termsOfUseUrl(): string | null {
-    return this.data.features.links.termsOfUse ?? null;
+    return this.data.descriptor.links.termsOfUse ?? null;
   }
 
   // A TV is not guaranteed to have a browser: target="_blank" fires an intent that nothing on the
@@ -389,7 +389,7 @@ export class VpnHoodApp {
   // throw then, so nothing may offer the screen. Every head that serves this SPA has one, so it
   // guards a head added later rather than one shipping today.
   public isRemoteAccessSupported(): boolean {
-    return this.data.features.isRemoteAccessSupported;
+    return this.data.descriptor.isRemoteAccessSupported;
   }
 
   public showRemoteAccessDialog(hint: RemoteAccessHint | null = null): void {
@@ -449,13 +449,13 @@ export class VpnHoodApp {
   // credential form, deliberately never the primary: it is appended by the provider, so the first
   // method that is not "password" is the store one.
   public primaryProviderId(): string | undefined {
-    return this.data.features.authProviderIds.find((x) => x !== AuthProviderIds.Password);
+    return this.data.descriptor.authProviderIds.find((x) => x !== AuthProviderIds.Password);
   }
 
   // Whether a tap on Sign in needs the chooser dialog: more than one way in (a store method beside
   // the account website's password), or password alone, which vhApp.signIn() cannot take.
   public hasSignInChoice(): boolean {
-    const ids = this.data.features.authProviderIds;
+    const ids = this.data.descriptor.authProviderIds;
     return ids.length > 1 || ids[0] === AuthProviderIds.Password;
   }
 
@@ -516,7 +516,7 @@ export class VpnHoodApp {
           // account in its storage. Invalid credential.
           if (
             statusCode === 401 &&
-            VpnHoodApp.instance.data.features.isAccountSupported &&
+            VpnHoodApp.instance.data.descriptor.isAccountSupported &&
             !VpnHoodApp.instance.data.userState.userAccount
           ) {
             await VpnHoodApp.instance.signOut();
@@ -630,7 +630,7 @@ export class VpnHoodApp {
     // Best-effort: the portal is often exactly what is blocked here, and a page that cannot reach it
     // must still show what it knows instead of an error. get() below serves the cached account. A head
     // with no account provider has nothing to refresh, and its API refuses the call.
-    if (withRefresh && this.data.features.isAccountSupported) {
+    if (withRefresh && this.data.descriptor.isAccountSupported) {
       try {
         await accountClient.refresh();
       } catch (error: unknown) {

@@ -23,7 +23,7 @@ const selectedApps = computed<string[]>({
 const isSaveRejected = computed(() => splitMode.value === SplitAppMode.Include && selectedApps.value.length == 0);
 
 onMounted(async () => {
-  if (vhApp.data.features.isExcludeAppsSupported || vhApp.data.features.isIncludeAppsSupported) {
+  if (vhApp.data.descriptor.isExcludeAppsSupported || vhApp.data.descriptor.isIncludeAppsSupported) {
     const installedApps = await vhApp.getInstalledApps();
 
     // Add isSelected to all app items
@@ -39,7 +39,7 @@ onMounted(async () => {
     const futureInstalledAppInfo: IListItemInfo = {
       id: "$",
       name: locale('ALL_FUTURE_APPS'),
-      icon: Util.getAssetPath(`future-apps-${vhApp.data.features.uiTheme}.png`),
+      icon: Util.getAssetPath(`future-apps-${vhApp.data.descriptor.uiTheme}.png`),
       isSelected: splitMode.value === SplitAppMode.All || splitMode.value === SplitAppMode.Exclude
     };
     appList.value.push(futureInstalledAppInfo);

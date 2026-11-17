@@ -18,7 +18,7 @@ const locale = i18n.global.t;
       <p>{{locale("LEARN_MORE_FREE_SERVERS_DISRUPTIONS_2")}}</p>
       <v-divider class="my-5"/>
       <h3 class="learning-title">{{locale("LEARN_MORE_FREE_SERVERS_DISRUPTIONS_3")}}</h3>
-      <p>{{locale("LEARN_MORE_FREE_SERVERS_DISRUPTIONS_4",{appName: vhApp.data.features.appName})}}</p>
+      <p>{{locale("LEARN_MORE_FREE_SERVERS_DISRUPTIONS_4",{appName: vhApp.data.descriptor.appName})}}</p>
       <v-divider class="my-5"/>
       <h3 class="learning-title">{{locale("LEARN_MORE_FREE_SERVERS_DISRUPTIONS_5")}}</h3>
       <p>{{locale("LEARN_MORE_FREE_SERVERS_DISRUPTIONS_6")}}</p>

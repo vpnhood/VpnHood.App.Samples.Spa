@@ -1,4 +1,4 @@
-using VpnHood.AppLib.App;
+using VpnHood.AppLogic.App;
 
 namespace AppUiSample.Spa.Maui;
 

@@ -80,7 +80,7 @@ const primaryBrand = computed(() => {
 });
 const primaryBrandStyle = computed(() =>
   primaryBrand.value ? brandButtonStyles[primaryBrand.value] : undefined);
-const hasPasswordMethod = computed(() => vhApp.data.features.authProviderIds.includes('password'));
+const hasPasswordMethod = computed(() => vhApp.data.descriptor.authProviderIds.includes('password'));
 // On the TV UI the email form is not offered - there is nothing to type on - and the phone stands
 // in for it: the pairing dialog, whose paired browser has the same form and the same app behind it.
 const isPhoneForEmail = computed(() => vhApp.data.isTvUi && hasPasswordMethod.value);

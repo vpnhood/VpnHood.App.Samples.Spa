@@ -111,7 +111,7 @@ function connectButtonText(): string {
   <v-sheet
     id="homeContainer"
     class="position-relative"
-    :class="[{'premium-user': isPremiumUser}, vhApp.data.features.uiTheme, vhApp.data.userSettings.cultureCode]"
+    :class="[{'premium-user': isPremiumUser}, vhApp.data.descriptor.uiTheme, vhApp.data.userSettings.cultureCode]"
   >
 
     <!-- In a landscape viewport the two body columns sit side by side (see the media query in the
@@ -154,7 +154,7 @@ function connectButtonText(): string {
           :tabindex="vhApp.data.isConnected ? '4' : '3'"
           :disabled="vhApp.data.connectionState !== AppConnectionState.None && !vhApp.data.state.canDisconnect"
           class="font-weight-bold mt-5 mb-4"
-          :class="[vhApp.data.features.uiTheme,
+          :class="[vhApp.data.descriptor.uiTheme,
           { 'connected': vhApp.data.isConnected },
           { 'tv-device': vhApp.data.isTvUi }
           ]"
@@ -174,7 +174,7 @@ function connectButtonText(): string {
 
         <!-- App filter button -->
         <home-config-btn
-          v-if="vhApp.data.features.isExcludeAppsSupported || vhApp.data.features.isIncludeAppsSupported"
+          v-if="vhApp.data.descriptor.isExcludeAppsSupported || vhApp.data.descriptor.isIncludeAppsSupported"
           prepend-icon="mdi-call-split"
           class="mb-1"
           tabindex="7"
@@ -224,7 +224,7 @@ function connectButtonText(): string {
              (where the phone stands in for the email form - see SignInDialog), signed in the
              account page. -->
         <home-config-btn
-          v-if="vhApp.data.isTvUi && vhApp.data.features.isAccountSupported"
+          v-if="vhApp.data.isTvUi && vhApp.data.descriptor.isAccountSupported"
           id="accountButton"
           prepend-icon="mdi-account-circle"
           tabindex="9"

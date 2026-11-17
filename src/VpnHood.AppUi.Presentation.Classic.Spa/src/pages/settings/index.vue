@@ -28,7 +28,7 @@ const isShowPrivacy: boolean = true;
 const isShowKillSwitch = computed(() => vhApp.data.intentFeatures.isKillSwitchSettingsSupported);
 // the device's own always-on setting, which this UI opens; where the app keeps it itself (a
 // desktop's service) only the Avalonia UI has the switch
-const isShowAlwaysOn = computed(() => vhApp.data.features.alwaysOnSupport === AlwaysOnSupport.Device);
+const isShowAlwaysOn = computed(() => vhApp.data.descriptor.alwaysOnSupport === AlwaysOnSupport.Device);
 
 const isShowAppSettingsSection = computed(() =>
   isShowLanguage || isShowNotifications.value || isShowQuickLaunch.value);

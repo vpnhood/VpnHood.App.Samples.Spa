@@ -26,7 +26,7 @@ const emit = defineEmits<{
 const documentHtml = ref<string>('');
 const documentTitle = ref<string>('');
 
-loadContentDocument(vhApp.data.features.privacyConsentAssetName, i18n.global.locale.value)
+loadContentDocument(vhApp.data.descriptor.privacyConsentAssetName, i18n.global.locale.value)
   .then(document => {
     documentHtml.value = document.html;
     documentTitle.value = document.title;

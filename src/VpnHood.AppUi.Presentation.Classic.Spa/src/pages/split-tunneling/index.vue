@@ -21,7 +21,7 @@ const splitState = computed(() => vhApp.data.state.splitTunnelingState);
 // be left standing over nothing. The guard names its sibling too, so it stays correct if the sibling
 // ever gains a gate of its own; the remaining sections hold ungated rows and are always shown.
 const isShowSplitApps = computed(() =>
-  vhApp.data.features.isExcludeAppsSupported || vhApp.data.features.isIncludeAppsSupported);
+  vhApp.data.descriptor.isExcludeAppsSupported || vhApp.data.descriptor.isIncludeAppsSupported);
 const isShowSplitDomains: boolean = true;
 const isShowAppsAndDomainsSection = computed(() => isShowSplitApps.value || isShowSplitDomains);
 

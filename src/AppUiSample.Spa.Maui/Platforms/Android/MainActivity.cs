@@ -1,9 +1,9 @@
 ﻿using Android.App;
 using Android.Service.QuickSettings;
-using VpnHood.AppLib.App.Android.Activities;
-using VpnHood.AppLib.App.Android.Constants;
-using VpnHood.AppUi.Hosting.Maui;
-using VpnHood.AppUi.Hosting.WebView;
+using VpnHood.AppLogic.App.Android.Activities;
+using VpnHood.AppLogic.App.Android.Constants;
+using VpnHood.AppHosting.Maui;
+using VpnHood.AppHosting.WebView;
 using VpnHood.Net.Toolkit.Graphics;
 
 // ReSharper disable once CheckNamespace

@@ -25,7 +25,7 @@ export class VpnHoodAppData {
   public userState: UserState = new UserState();
   public state: AppState;
   public userSettings: UserSettings;
-  public features: AppDescriptor;
+  public descriptor: AppDescriptor;
   public intentFeatures: DeviceIntentFeatures;
   public vpnProfileInfos: VpnProfileInfo[];
   public cultureInfos: UiCultureInfo[];
@@ -38,7 +38,7 @@ export class VpnHoodAppData {
   public constructor(
     state: AppState,
     userSettings: UserSettings,
-    features: AppDescriptor,
+    descriptor: AppDescriptor,
     intentFeatures: DeviceIntentFeatures,
     vpnProfileInfos: VpnProfileInfo[],
     cultureInfos: UiCultureInfo[],
@@ -46,7 +46,7 @@ export class VpnHoodAppData {
   ) {
     this.state = state;
     this.userSettings = userSettings;
-    this.features = features;
+    this.descriptor = descriptor;
     this.intentFeatures = intentFeatures;
     this.vpnProfileInfos = vpnProfileInfos;
     this.cultureInfos = cultureInfos;
@@ -56,16 +56,16 @@ export class VpnHoodAppData {
   // Render the TV layout: the device is a TV (or /tv-mode says so) AND this is its own screen. A
   // phone that opened the app over the LAN renders the full layout of the same app, which is what
   // it is there for. Layout, focus and link handling key off this; the crash report keeps
-  // features.isTv, the device fact.
+  // descriptor.isTv, the device fact.
   get isTvUi(): boolean {
-    return this.features.isTv && !this.isRemote;
+    return this.descriptor.isTv && !this.isRemote;
   }
 
   // The other side of the same pairing: a browser on the network driving a TV's app. The full
   // layout, plus a banner saying so, and a flow whose UI opens on the TV (the store's sign-in, its
   // payment sheet) tells the person to look at the TV - see VpnHoodApp.withContinueOnTv.
   get isManagingTv(): boolean {
-    return this.features.isTv && this.isRemote;
+    return this.descriptor.isTv && this.isRemote;
   }
 
   get connectionState(): AppConnectionState {
@@ -131,7 +131,7 @@ export class VpnHoodAppData {
     if (!this.hasDebugCommand(DebugCommand.StarlinkTools))
       return false;
 
-    return this.features.isDebugMode || this.features.osType === AppOsType.Android;
+    return this.descriptor.isDebugMode || this.descriptor.osType === AppOsType.Android;
   }
 
   get isConnected(): boolean {
@@ -142,10 +142,10 @@ export class VpnHoodAppData {
     return this.state.connectionState === AppConnectionState.Unstable;
   }
 
-  // The one place "does this build have a premium tier at all" is asked. Null features.premium is
+  // The one place "does this build have a premium tier at all" is asked. Null descriptor.premium is
   // not "premium locked": it is the FULL app — no crown, no promotion, every feature allowed.
   get isPremiumSupported(): boolean {
-    return this.features.premium != null;
+    return this.descriptor.premium != null;
   }
 
   get premiumIconColor(): string {
@@ -296,13 +296,13 @@ export class VpnHoodAppData {
   }
 
   public isShowProtocol(protocol: ChannelProtocol): boolean {
-    return this.features.channelProtocols.includes(protocol);
+    return this.descriptor.channelProtocols.includes(protocol);
   }
 
   // Does this build collect anonymous data at all? False when the app's tracker collapsed to a
   // NullTracker: then there is nothing to consent to, and the privacy page must not claim otherwise.
   get isAnonymousTrackerSupported(): boolean {
-    return this.features.isAnonymousTrackerSupported;
+    return this.descriptor.isAnonymousTrackerSupported;
   }
 
   //Add padding to the pages for handle edge-to-edge feature
@@ -357,7 +357,7 @@ export class VpnHoodAppData {
 
   public isPremiumFeature(appFeature: AppFeature): boolean {
     // a build with no premium tier sells no feature — everything is everyone's
-    return this.features.premium?.features.includes(appFeature) ?? false;
+    return this.descriptor.premium?.features.includes(appFeature) ?? false;
   }
 
   public isPremiumFeatureAllowed(appFeature : AppFeature): boolean {

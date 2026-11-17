@@ -73,7 +73,7 @@ let restore = null; // what the run must undo, whatever happens
 try {
   // ---- preconditions: the real stack is up --------------------------------
   const cfg = (await api('GET', '/api/app/config')).json;
-  if (!cfg?.features?.isAccountSupported) { bad(`app at ${APP} has no account support`); process.exit(1); }
+  if (!cfg?.descriptor?.isAccountSupported) { bad(`app at ${APP} has no account support`); process.exit(1); }
   ok(`app is up with account support (${APP})`);
   restore = { settings: cfg.userSettings, profileId: cfg.userSettings.vpnProfileId ?? cfg.vpnProfileInfos[0].vpnProfileId };
 
@@ -180,7 +180,7 @@ try {
     'the retired Remove action is still offered on a refusal');
 
   const changeCount = await page.getByRole('button', { name: en.CHANGE_CODE, exact: true }).count();
-  const codeSupported = cfg?.features?.premium?.allowImportAccessCode === true;
+  const codeSupported = cfg?.descriptor?.premium?.allowImportAccessCode === true;
   check(changeCount === (codeSupported ? 1 : 0),
     `Change code is offered exactly where the build takes typed codes (allowImportAccessCode=${codeSupported})`,
     `Change code count ${changeCount} does not match allowImportAccessCode=${codeSupported}`);

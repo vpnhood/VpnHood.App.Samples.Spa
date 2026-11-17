@@ -29,7 +29,7 @@
 		<PackageReference Include="Microsoft.Maui.Controls" Version="11.0.10" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="11.0.0" />
 		<!-- The app under a MAUI UI (VpnHoodAppMaui): its start on Android and Windows, in this process. -->
-		<PackageReference Include="VpnHood.AppUi.Hosting.Maui" Version="$(VhPackageVersion)" />
+		<PackageReference Include="VpnHood.AppHosting.Maui" Version="$(VhPackageVersion)" />
 		<!-- The VPN service: on Android the APK carries it and Android starts it; on Windows the head's
 		     device runs it in this process (WindowsInProcessDevice). -->
 		<PackageReference Include="VpnHood.Core.Client.VpnServices.Host.Android" Version="$(VhPackageVersion)"
@@ -37,7 +37,7 @@
 		<PackageReference Include="VpnHood.Core.Client.VpnServices.Host.WindowsTun" Version="$(VhPackageVersion)"
 			Condition="$([MSBuild]::GetTargetPlatformIdentifier('$(TargetFramework)')) == 'windows'" />
 		<!-- The web host the page is served from, and that a paired browser reaches. -->
-		<PackageReference Include="VpnHood.AppLib.Api.WebHost" Version="$(VhPackageVersion)" />
+		<PackageReference Include="VpnHood.AppLogic.Api.WebHost" Version="$(VhPackageVersion)" />
 		<!-- The IP-location database, placed beside the app by its own package's targets. -->
 		<PackageReference Include="VpnHood.Net.IpLocations.Assets.Ip2LocationLite" Version="$(VhIpLocationsPackageVersion)" />
 	</ItemGroup>

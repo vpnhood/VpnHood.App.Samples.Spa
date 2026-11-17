@@ -60,7 +60,7 @@ const isShowPrivacyPolicyDialog = computed<boolean>({
     // The HEAD decides whether acceptance is required: a website download has shown the user nothing
     // beforehand, while a store build's user already accepted the store's own agreement. Never
     // inferred from which product this is. See AppOptions.IsLicenseAgreementRequired.
-    if (!vhApp.data.features.isLicenseAgreementRequired)
+    if (!vhApp.data.descriptor.isLicenseAgreementRequired)
       return false;
 
     return !vhApp.data.userSettings.isLicenseAccepted;
@@ -126,7 +126,7 @@ onMounted(async () => {
   }, 1000);
 
   // Get the user account
-  if (vhApp.data.features.isAccountSupported)
+  if (vhApp.data.descriptor.isAccountSupported)
     await vhApp.loadAccount();
 })
 </script>

@@ -26,7 +26,7 @@ const addServerDialogModel = ref(new ComponentRouteController(ComponentName.AddS
 // on screen for a non-English iOS user. iOS never reads that key, so it cannot resurface. Until
 // vhtranslator runs, the other locales simply fall back to English for this one card.
 function getServerKeyMethodsHtml(): string {
-  return vhApp.data.features.osType === AppOsType.Ios
+  return vhApp.data.descriptor.osType === AppOsType.Ios
     ? locale('GET_SERVER_KEY_METHODS_NO_CONNECT_DESC')
     : locale('GET_SERVER_KEY_METHODS_DESC', { connectAppUrl: UiConstants.connectAppUrl });
 }
@@ -50,7 +50,7 @@ function onAddServer(): void {
 
     <!-- Add server button -->
     <btn-style-2
-      v-if="vhApp.data.features.isAddAccessKeySupported"
+      v-if="vhApp.data.descriptor.isAddAccessKeySupported"
       class="mb-5"
       block
       variant="tonal"
@@ -61,7 +61,7 @@ function onAddServer(): void {
     />
 
     <!-- Show alert, if user does not have any server -->
-    <div v-if="vhApp.data.features.isAddAccessKeySupported && vhApp.data.vpnProfileInfos.length === 0">
+    <div v-if="vhApp.data.descriptor.isAddAccessKeySupported && vhApp.data.vpnProfileInfos.length === 0">
       <alert-warning :title="locale('WARNING')" :text="locale('NO_SERVER_AVAILABLE')" class="mb-4" />
       <config-card>
         <div v-html="getServerKeyMethodsHtml()" class="pa-4 text-body-small"></div>

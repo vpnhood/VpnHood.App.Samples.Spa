@@ -7,7 +7,7 @@
 > products moved to Avalonia.
 
 The VpnHood app's web UI, kept as a **sample**. The products moved to the Avalonia UI in the main
-repo (`VpnHood.AppUi.Presentation.Classic.Avalonia`); this repo proves the other direction still
+repo (`VpnHood.AppUi.Avalonia.Classic`); this repo proves the other direction still
 works: a head built from the published VpnHood packages alone, showing a single-page web app as its
 UI. Nothing here references the main repo's source - what the samples get from NuGet is what any
 head outside that repo gets, so swapping the presentation is a matter of which package a head
@@ -18,11 +18,11 @@ references and which page it places beside itself.
 | Folder | What it is |
 | --- | --- |
 | `src/VpnHood.AppUi.Presentation.Classic.Spa/` | the UI: Vue 3, Vite, Vuetify. Its `src/assets` holds its own copies of the images, flags and fonts; the words of every language and the content documents are written and translated in the asset store (vpnhood/VpnHood.AppUi.Assets.Classic), and its `src/locales` and `src/content` are that store's copy, which its `_copy-words-from-store.ps1` brings over. |
-| `src/VpnHood.AppLib.Api.SwaggerHost/` | poses the app API (`VpnHood.AppLib.Api`, from NuGet) to NSwag; its `_recreate-api.ps1` regenerates the SPA's TypeScript client. Never run in an app: every action throws. |
-| `src/AppUiSample.Spa.Windows/`, `…Windows.VpnHost/` | a Windows head: the SPA in a WebView2 window, over `VpnHood.AppUi.Hosting.WebView.Windows`, and its VPN host, the VPN service's own process, which the app's service starts at each connect. |
-| `src/AppUiSample.Spa.Android/` | an Android head: the SPA in the system WebView, over `VpnHood.AppUi.Hosting.WebView.Android`. |
-| `src/AppUiSample.Spa.Maui/` | a MAUI head on Android and Windows: the SPA in MAUI's own WebView, the app in its process through `VpnHood.AppUi.Hosting.Maui`. |
-| `src/AppUiSample.Spa.Ios/`, `…Ios.Extension/` | an iOS head: the SPA in a WKWebView, over `VpnHood.AppUi.Hosting.WebView.Ios`, and the network extension every iOS VPN app bundles, where the tunnel runs. |
+| `src/VpnHood.AppLib.Api.SwaggerHost/` | poses the app API (`VpnHood.AppLogic.Api`, from NuGet) to NSwag; its `_recreate-api.ps1` regenerates the SPA's TypeScript client. Never run in an app: every action throws. |
+| `src/AppUiSample.Spa.Windows/`, `…Windows.VpnHost/` | a Windows head: the SPA in a WebView2 window, over `VpnHood.AppHosting.WebView.Windows`, and its VPN host, the VPN service's own process, which the app's service starts at each connect. |
+| `src/AppUiSample.Spa.Android/` | an Android head: the SPA in the system WebView, over `VpnHood.AppHosting.WebView.Android`. |
+| `src/AppUiSample.Spa.Maui/` | a MAUI head on Android and Windows: the SPA in MAUI's own WebView, the app in its process through `VpnHood.AppHosting.Maui`. |
+| `src/AppUiSample.Spa.Ios/`, `…Ios.Extension/` | an iOS head: the SPA in a WKWebView, over `VpnHood.AppHosting.WebView.Ios`, and the network extension every iOS VPN app bundles, where the tunnel runs. |
 | `src/SpaAssets.targets` | what the samples import: zips the SPA's `dist` into the two files a head places beside itself. |
 
 ## Running a sample

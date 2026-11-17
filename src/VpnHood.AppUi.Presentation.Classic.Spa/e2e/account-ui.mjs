@@ -232,9 +232,9 @@ let restore = null;
 
 try {
   const boot = (await api('GET', '/api/app/config')).json;
-  if (!boot?.features?.isAccountSupported) { bad(`app at ${APP} has no account support`); process.exit(1); }
+  if (!boot?.descriptor?.isAccountSupported) { bad(`app at ${APP} has no account support`); process.exit(1); }
   restore = { settings: boot.userSettings };
-  const codeSupported = boot?.features?.premium?.allowImportAccessCode === true;
+  const codeSupported = boot?.descriptor?.premium?.allowImportAccessCode === true;
   console.log(`   app ${APP} · SPA ${SPA} · allowImportAccessCode=${codeSupported}`);
 
   // a clean slate: no account, no code, whatever the last run left behind

@@ -108,7 +108,7 @@ function isShowCloseBtn(): boolean{
             }}</v-card-title>
         </v-card-item>
 
-        <v-card-text class="text-body-large">{{locale('FEEDBACK_DESC',{appName: vhApp.data.features.appName})}}</v-card-text>
+        <v-card-text class="text-body-large">{{locale('FEEDBACK_DESC',{appName: vhApp.data.descriptor.appName})}}</v-card-text>
 
         <v-card-item>
 
@@ -175,7 +175,7 @@ function isShowCloseBtn(): boolean{
       <v-card-item v-if="!showReviewThanks" class="text-end mt-3">
         <!-- iOS only: App Review requires the prompt to be dismissible; other platforms keep the flow as is. -->
         <v-btn
-          v-if="vhApp.data.features.osType === AppOsType.Ios"
+          v-if="vhApp.data.descriptor.osType === AppOsType.Ios"
           variant="text"
           rounded="pill"
           class="me-2"

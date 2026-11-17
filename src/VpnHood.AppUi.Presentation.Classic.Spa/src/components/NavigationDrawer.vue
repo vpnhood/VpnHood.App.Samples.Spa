@@ -13,7 +13,7 @@ import SignInDialog from '@/components/User/SignInDialog.vue';
 const vhApp = VpnHoodApp.instance;
 const locale = i18n.global.t;
 
-// "Sign in with X" label for the provider the tap will actually invoke (features.authProviderIds —
+// "Sign in with X" label for the provider the tap will actually invoke (descriptor.authProviderIds —
 // free-form ids self-declared by the app's external auth provider: "google", "apple", or anything a
 // third-party provider declares). Convention over branching: a provider's label is its
 // SIGN_IN_WITH_<UPPERCASE-ID> i18n key, and an id without one (a fork's provider before it adds the
@@ -27,7 +27,7 @@ const showSignInDialog = ref(false);
 // sign in at all.
 const hasSignInChoice = computed(() => vhApp.hasSignInChoice());
 const signInLabelKey = computed(() => {
-  const providerId = vhApp.data.features.authProviderIds[0];
+  const providerId = vhApp.data.descriptor.authProviderIds[0];
   if (!providerId || hasSignInChoice.value) return 'SIGN_IN';
   const key = `SIGN_IN_WITH_${providerId.toUpperCase()}`;
   return i18n.global.te(key) ? key : 'SIGN_IN';
@@ -64,11 +64,11 @@ async function diagnose(): Promise<void> {
 // identifies both: app "8.0.834" carrying SPA "1.0.975" reads as 8.0.834.975. CI bumps the SPA
 // patch on every published build, so that last segment maps to a commit in the WebUI repo.
 function mergedAppAndUiVersion(): string {
-  const appVersion = vhApp.data.features.version.split('.');
+  const appVersion = vhApp.data.descriptor.version.split('.');
   const uiVersion = import.meta.env.PACKAGE_VERSION?.split('.');
   if (!uiVersion || uiVersion.length < 3) {
     console.error('could not find UI package version.');
-    return vhApp.data.features.version;
+    return vhApp.data.descriptor.version;
   }
   return [appVersion[0], appVersion[1], appVersion[2], uiVersion[2]].join('.');
 }
@@ -140,7 +140,7 @@ function edgeToEdgeHeight(bottom: boolean): string{
 
       <!-- the product's logo, by the store path the head named; not the look's to choose -->
       <v-img
-        :src="Util.getStoreAssetPath(vhApp.data.features.logoAssetPath)"
+        :src="Util.getStoreAssetPath(vhApp.data.descriptor.logoAssetPath)"
         :eager="true"
         alt="logo"
         max-width="50"
@@ -151,7 +151,7 @@ function edgeToEdgeHeight(bottom: boolean): string{
       <div class="ms-3">
         <!-- App name -->
         <h4 dir="ltr" :class="vuetify.locale.isRtl.value? 'text-end' : 'text-start'" class="text-no-wrap">
-          {{vhApp.data.features.appName}}
+          {{vhApp.data.descriptor.appName}}
         </h4>
 
         <!-- App full version -->
@@ -186,7 +186,7 @@ function edgeToEdgeHeight(bottom: boolean): string{
 
       <!-- Sign in or account button -->
       <v-list-item
-        v-if="vhApp.data.features.isAccountSupported"
+        v-if="vhApp.data.descriptor.isAccountSupported"
         class="border-b"
         @click="vhApp.data.userState.userAccount ? navigateByRouter({name: 'ACCOUNT'}) : onSignIn()"
       >
@@ -274,7 +274,7 @@ function edgeToEdgeHeight(bottom: boolean): string{
 
       <!-- Create personal server -->
       <v-list-item
-        v-if="vhApp.data.features.isAddAccessKeySupported"
+        v-if="vhApp.data.descriptor.isAddAccessKeySupported"
         :nav="true"
         density="compact"
         class="opacity-80"

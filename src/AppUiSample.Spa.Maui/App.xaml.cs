@@ -1,4 +1,4 @@
-using VpnHood.AppUi.Hosting.Maui;
+using VpnHood.AppHosting.Maui;
 
 namespace AppUiSample.Spa.Maui;
 

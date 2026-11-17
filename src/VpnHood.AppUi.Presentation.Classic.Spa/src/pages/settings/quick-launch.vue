@@ -17,7 +17,7 @@ const supportedRequestQuickLaunchSteps = [
 const unsupportedRequestQuickLaunchSteps = [
   locale('QUICK_LAUNCH_HOW_TO_TURN_ON_ALTERNATIVE_STEP_1'),
   locale('QUICK_LAUNCH_HOW_TO_TURN_ON_ALTERNATIVE_STEP_2'),
-  locale('QUICK_LAUNCH_HOW_TO_TURN_ON_ALTERNATIVE_STEP_3',{appName: vhApp.data.features.appName}),
+  locale('QUICK_LAUNCH_HOW_TO_TURN_ON_ALTERNATIVE_STEP_3',{appName: vhApp.data.descriptor.appName}),
   locale('QUICK_LAUNCH_HOW_TO_TURN_ON_ALTERNATIVE_STEP_4'),
   locale('QUICK_LAUNCH_HOW_TO_TURN_ON_ALTERNATIVE_STEP_5')
 ]

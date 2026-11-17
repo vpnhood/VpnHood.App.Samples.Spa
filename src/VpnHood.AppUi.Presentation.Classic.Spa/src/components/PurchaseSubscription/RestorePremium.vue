@@ -66,7 +66,7 @@ async function restore(): Promise<void> {
 
     // A build with no store has nothing to ask; signing in and refreshing the account is the whole
     // of the restore there, and calling into a billing service it does not have would only throw.
-    const restored = vhApp.data.features.isBillingSupported
+    const restored = vhApp.data.descriptor.isBillingSupported
       ? await vhApp.withContinueOnTv(() => ClientApiFactory.instance.createBillingClient().restorePurchase())
       : false;
     await vhApp.loadAccount();
@@ -100,7 +100,7 @@ watch(showSignInDialog, async (isOpen, wasOpen) => {
 </script>
 
 <template>
-  <div v-if="vhApp.data.features.isAccountSupported">
+  <div v-if="vhApp.data.descriptor.isAccountSupported">
     <v-btn
       variant="text"
       size="small"

@@ -32,7 +32,7 @@ const carouselItems: CarouselItem[] = [
     height: "200px",
     // Only a build that HAS ads can sell their removal. Where none exists — the App Store head, any
     // build with no ad provider — this promises to take away something the person never sees.
-    isSupported: vhApp.data.features.isAdSupported,
+    isSupported: vhApp.data.descriptor.isAdSupported,
   },
   {
     image: "more-location.webp",
@@ -65,7 +65,7 @@ const carouselItems: CarouselItem[] = [
     title: "ALWAYS_ON",
     description: "ALWAYS_ON_PREMIUM_DESC",
     height: "200px",
-    isSupported: vhApp.data.features.alwaysOnSupport === AlwaysOnSupport.Device,
+    isSupported: vhApp.data.descriptor.alwaysOnSupport === AlwaysOnSupport.Device,
   },
   {
     image: "support.webp",

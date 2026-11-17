@@ -14,7 +14,7 @@ const locale = i18n.global.t;
     image="kill-switch.webp"
     :list-step="[
       locale('KILL_SWITCH_HOW_TO_TURN_ON_STEP_1'),
-      locale('KILL_SWITCH_HOW_TO_TURN_ON_STEP_2',{appName: vhApp.data.features.appName, icon: '⚙️'}),
+      locale('KILL_SWITCH_HOW_TO_TURN_ON_STEP_2',{appName: vhApp.data.descriptor.appName, icon: '⚙️'}),
       locale('KILL_SWITCH_HOW_TO_TURN_ON_STEP_3')
     ]"
     button-text="OPEN_VPN_SETTINGS"

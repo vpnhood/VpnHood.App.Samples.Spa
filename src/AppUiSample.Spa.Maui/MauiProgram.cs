@@ -1,8 +1,8 @@
 using Microsoft.Extensions.Logging;
-using VpnHood.AppLib.Api.App;
-using VpnHood.AppLib.Api.WebHost;
-using VpnHood.AppLib.App;
-using VpnHood.AppUi.Hosting.Maui;
+using VpnHood.AppLogic.Api.App;
+using VpnHood.AppLogic.Api.WebHost;
+using VpnHood.AppLogic.App;
+using VpnHood.AppHosting.Maui;
 using VpnHood.Core.Client.Abstractions;
 using VpnHood.Net.Toolkit.Assets;
 #if WINDOWS
@@ -49,8 +49,8 @@ public static class MauiProgram
             PackageTitle = "VpnHoodSpaMauiSample",
             CompanyName = "VpnHood",
             UiTheme = "blue",
-            // the engine's own sample token, so the sample has a server profile and a location to show
-            AccessKeys = [ClientOptions.SampleAccessKey],
+            // VpnHood's test server, so the sample has a server profile and a location to show; its sessions end after a few minutes
+            AccessKeys = [ClientOptions.TestAccessKey],
             IsAddAccessKeySupported = true,
             Links = new AppLinks
             {

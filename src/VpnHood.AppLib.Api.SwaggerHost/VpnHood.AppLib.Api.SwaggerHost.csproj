@@ -10,7 +10,7 @@
 		<!--Keep in sync with NSwag.ConsoleCore in ./.config/dotnet-tools.json-->
 		<PackageReference Include="NSwag.AspNetCore" Version="[14.7.1]" />
 		<!-- The contract this host poses, from NuGet: nothing here references the main repo's source. -->
-		<PackageReference Include="VpnHood.AppLib.Api" Version="$(VhPackageVersion)" />
+		<PackageReference Include="VpnHood.AppLogic.Api" Version="$(VhPackageVersion)" />
 	</ItemGroup>
 
 </Project>

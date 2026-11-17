@@ -198,7 +198,7 @@ function expansionPanelClick(vpnProfileInfo: VpnProfileInfo): void{
                     prepend-icon="mdi-speedometer"
                     @click="ConnectManager.connectWithProfile({vpnProfileId: vpnProfileInfo.vpnProfileId, isDiagnose: true})"
                   />
-                  <v-divider v-if="vhApp.data.features.isAddAccessKeySupported"/>
+                  <v-divider v-if="vhApp.data.descriptor.isAddAccessKeySupported"/>
 
                   <!-- Custom endpoint -->
                   <v-list-item
@@ -221,7 +221,7 @@ function expansionPanelClick(vpnProfileInfo: VpnProfileInfo): void{
                   </template>
 
                   <!-- Delete item -->
-                  <v-list-item v-if="vhApp.data.features.isAddAccessKeySupported"
+                  <v-list-item v-if="vhApp.data.descriptor.isAddAccessKeySupported"
                                :title="locale('REMOVE')"
                                prepend-icon="mdi-delete"
                                @click="showConfirmDeleteDialog(vpnProfileInfo)"

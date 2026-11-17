@@ -1,10 +1,10 @@
-using VpnHood.AppLib.Api.App;
-using VpnHood.AppLib.Api.WebHost;
-using VpnHood.AppLib.App;
-using VpnHood.AppUi.Hosting.Desktop;
-using VpnHood.AppUi.Hosting.Desktop.Abstractions;
-using VpnHood.AppUi.Hosting.Desktop.WindowsTun;
-using VpnHood.AppUi.Hosting.WebView.Windows;
+using VpnHood.AppLogic.Api.App;
+using VpnHood.AppLogic.Api.WebHost;
+using VpnHood.AppLogic.App;
+using VpnHood.AppHosting.Desktop;
+using VpnHood.AppHosting.Desktop.Abstractions;
+using VpnHood.AppHosting.Desktop.WindowsTun;
+using VpnHood.AppHosting.WebView.Windows;
 using VpnHood.Core.Client.Abstractions;
 using VpnHood.Net.Toolkit.Assets;
 using VpnHood.Net.Toolkit.Graphics;
@@ -61,8 +61,8 @@ internal static class App
             PackageTitle = "VpnHoodSpaSample",
             CompanyName = "VpnHood",
             UiTheme = "blue",
-            // the engine's own sample token, so the sample has a server profile and a location to show
-            AccessKeys = [ClientOptions.SampleAccessKey],
+            // VpnHood's test server, so the sample has a server profile and a location to show; its sessions end after a few minutes
+            AccessKeys = [ClientOptions.TestAccessKey],
             IsAddAccessKeySupported = IsAddAccessKeySupported,
             Links = new AppLinks {
                 PrivacyPolicy = new Uri("https://www.vpnhood.com/legal/vpnhood-client/privacy-policy/"),

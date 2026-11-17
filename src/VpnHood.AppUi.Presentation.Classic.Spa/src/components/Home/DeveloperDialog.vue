@@ -45,7 +45,7 @@ async function saveDebugDataSetting(): Promise<void> {
           theme="dark"
           clearable
           label="DebugData1"
-          :items="vhApp.data.features.debugCommands"
+          :items="vhApp.data.descriptor.debugCommands"
           :list-props="{ bgColor: 'app-bar' }"
           hide-details
           hide-selected

@@ -1,9 +1,9 @@
 using Android.Runtime;
-using VpnHood.AppLib.Api.App;
-using VpnHood.AppLib.Api.WebHost;
-using VpnHood.AppLib.App;
-using VpnHood.AppLib.App.Android.Constants;
-using VpnHood.AppUi.Hosting.WebView.Android;
+using VpnHood.AppLogic.Api.App;
+using VpnHood.AppLogic.Api.WebHost;
+using VpnHood.AppLogic.App;
+using VpnHood.AppLogic.App.Android.Constants;
+using VpnHood.AppHosting.WebView.Android;
 using VpnHood.Core.Client.Abstractions;
 using VpnHood.Net.Toolkit.Assets;
 
@@ -54,8 +54,8 @@ public class App(IntPtr javaReference, JniHandleOwnership transfer)
             PackageTitle = "VpnHoodSpaSample",
             CompanyName = "VpnHood",
             UiTheme = "blue",
-            // the engine's own sample token, so the sample has a server profile and a location to show
-            AccessKeys = [ClientOptions.SampleAccessKey],
+            // VpnHood's test server, so the sample has a server profile and a location to show; its sessions end after a few minutes
+            AccessKeys = [ClientOptions.TestAccessKey],
             IsAddAccessKeySupported = true,
             Links = new AppLinks {
                 PrivacyPolicy = new Uri("https://www.vpnhood.com/legal/vpnhood-client/privacy-policy/"),

@@ -15,7 +15,65 @@
 	     The app reads both at those asset paths through its platform's IAssetProvider, the way
 	     every head of the main repo does; the placement below is the one their packages' targets
 	     use. The two lists (locales, fonts) exist because a provider answers by name and never
-	     enumerates - they are what _sync-assets.ps1 writes in the main repo. -->
+	     enumerates - they are what _sync-assets.ps1 writes in the main repo.
+
+	     Each zip carries the stamp the app names its extracted copy by (ZipStamp, VpnHood.Net.Toolkit),
+	     as the store's _zip-assets.ps1 writes it: without one, the app reads the whole zip at each
+	     start to hash it. -->
+	<UsingTask TaskName="VhWriteStampedZip" TaskFactory="RoslynCodeTaskFactory"
+	           AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll">
+		<ParameterGroup>
+			<SourceDirectory ParameterType="System.String" Required="true" />
+			<DestinationFile ParameterType="System.String" Required="true" />
+		</ParameterGroup>
+		<Task>
+			<Using Namespace="System.IO" />
+			<Using Namespace="System.IO.Compression" />
+			<Using Namespace="System.Security.Cryptography" />
+			<Using Namespace="System.Text" />
+			<Code Type="Fragment" Language="cs"><![CDATA[
+// "VHSTAMP:", 16 hex digits and a newline, then the zip in the same file, so its offsets count the
+// stamp. The digits are the first 16 of the whole file's SHA-256, taken while they were still zero.
+var magic = Encoding.ASCII.GetBytes("VHSTAMP:");
+var stored = new[] { ".ttf", ".webp", ".png", ".jpg", ".woff", ".woff2" };
+var root = Path.GetFullPath(SourceDirectory).TrimEnd('\\', '/');
+var files = Directory.GetFiles(root, "*", SearchOption.AllDirectories);
+Array.Sort(files, StringComparer.Ordinal);
+
+using (var file = new FileStream(DestinationFile, FileMode.Create, FileAccess.ReadWrite)) {
+    file.Write(magic, 0, magic.Length);
+    file.Write(new byte[16], 0, 16);
+    file.WriteByte((byte)'\n');
+
+    using (var zip = new ZipArchive(file, ZipArchiveMode.Create, true)) {
+        foreach (var path in files) {
+            var name = path.Substring(root.Length + 1).Replace('\\', '/');
+            var level = Array.IndexOf(stored, Path.GetExtension(path).ToLowerInvariant()) >= 0
+                ? CompressionLevel.NoCompression
+                : CompressionLevel.Optimal;
+            var entry = zip.CreateEntry(name, level);
+            entry.LastWriteTime = File.GetLastWriteTime(path);
+            using (var source = File.OpenRead(path))
+            using (var target = entry.Open())
+                source.CopyTo(target);
+        }
+    }
+
+    file.Position = 0;
+    byte[] hash;
+    using (var sha = SHA256.Create())
+        hash = sha.ComputeHash(file);
+    var digits = new StringBuilder();
+    for (var i = 0; i < 8; i++)
+        digits.Append(hash[i].ToString("x2"));
+    file.Position = magic.Length;
+    var digitBytes = Encoding.ASCII.GetBytes(digits.ToString());
+    file.Write(digitBytes, 0, digitBytes.Length);
+}
+]]></Code>
+		</Task>
+	</UsingTask>
+
 	<PropertyGroup>
 		<SpaDir>$(MSBuildThisFileDirectory)VpnHood.AppUi.Presentation.Classic.Spa\</SpaDir>
 		<SpaDistDir>$(SpaDir)dist\</SpaDistDir>
@@ -79,7 +137,7 @@
 		<Copy SourceFiles="@(_SpaWebRootFile)" DestinationFiles="@(_SpaWebRootFile->'$(SpaWebRootDir)%(RecursiveDir)%(Filename)%(Extension)')" />
 
 		<Delete Files="$(SpaUiZip);$(SpaWebRootZip)" />
-		<ZipDirectory SourceDirectory="$(SpaStoreDir)" DestinationFile="$(SpaUiZip)" />
-		<ZipDirectory SourceDirectory="$(SpaWebRootDir)" DestinationFile="$(SpaWebRootZip)" />
+		<VhWriteStampedZip SourceDirectory="$(SpaStoreDir)" DestinationFile="$(SpaUiZip)" />
+		<VhWriteStampedZip SourceDirectory="$(SpaWebRootDir)" DestinationFile="$(SpaWebRootZip)" />
 	</Target>
 </Project>
