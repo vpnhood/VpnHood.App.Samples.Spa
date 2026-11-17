@@ -13,7 +13,7 @@
 - Let global error handler handle errors (vhApp.processError).
 - Do not use [id].vue filename for dynamic routes and customize route param name instead.
 - Do not update the VpnHood.Client.Api.ts file manually, it is auto-generated: run
-  `src/VpnHood.AppLib.Api.SwaggerHost/_recreate-api.ps1`.
+  `src/VpnHood.AppLogic.Api.SwaggerHost/_recreate-api.ps1`.
 - Assets loaded by name at run time live in `src/assets` (`src/locales` and `src/content` hold the
   store's copy of the words) and are copied verbatim into the bundle's `assets` folder — see "The
   assets folder" in build/assets-folder-plugin.ts before renaming, moving or importing one.

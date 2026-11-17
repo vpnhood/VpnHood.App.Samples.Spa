@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using VpnHood.AppLogic.Api.App;
 using VpnHood.AppLogic.Api.Exceptions;
-using VpnHood.AppLib.Api.SwaggerHost.Exceptions;
+using VpnHood.AppLogic.Api.SwaggerHost.Exceptions;
 using VpnHood.AppLogic.Api;
 using VpnHood.AppLogic.Api.Ads;
 using VpnHood.AppLogic.Api.Sessions;
@@ -11,7 +11,7 @@ using VpnHood.AppLogic.Api.SplitTunneling;
 using VpnHood.AppLogic.Api.Device;
 using VpnHood.AppLogic.Api.Updaters;
 
-namespace VpnHood.AppLib.Api.SwaggerHost.Controllers;
+namespace VpnHood.AppLogic.Api.SwaggerHost.Controllers;
 
 [ApiController]
 [Route("api/app")]

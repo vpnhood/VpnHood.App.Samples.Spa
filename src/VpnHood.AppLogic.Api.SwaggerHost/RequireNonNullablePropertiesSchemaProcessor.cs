@@ -1,7 +1,7 @@
 ﻿using NJsonSchema;
 using NJsonSchema.Generation;
 
-namespace VpnHood.AppLib.Api.SwaggerHost;
+namespace VpnHood.AppLogic.Api.SwaggerHost;
 
 // OpenApi3 marks a property required only when C# declares it 'required', so members that are
 // merely non-nullable (computed properties, value types) become optional in the generated client.

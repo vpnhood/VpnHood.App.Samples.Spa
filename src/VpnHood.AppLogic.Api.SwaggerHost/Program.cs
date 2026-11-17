@@ -3,7 +3,7 @@ using NJsonSchema;
 using NJsonSchema.Generation.TypeMappers;
 using VpnHood.Net.Toolkit.Net;
 
-namespace VpnHood.AppLib.Api.SwaggerHost;
+namespace VpnHood.AppLogic.Api.SwaggerHost;
 
 public static class Program
 {

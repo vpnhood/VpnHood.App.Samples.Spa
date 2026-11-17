@@ -1,4 +1,4 @@
-# VpnHood.AppUi.Spa
+# VpnHood.App.Samples.Spa
 
 > [!IMPORTANT]
 > **A demonstration, not a recommendation.** It shows that the VpnHood engine carries whatever UI
@@ -18,7 +18,7 @@ references and which page it places beside itself.
 | Folder | What it is |
 | --- | --- |
 | `src/VpnHood.AppUi.Presentation.Classic.Spa/` | the UI: Vue 3, Vite, Vuetify. Its `src/assets` holds its own copies of the images, flags and fonts; the words of every language and the content documents are written and translated in the asset store (vpnhood/VpnHood.AppUi.Assets.Classic), and its `src/locales` and `src/content` are that store's copy, which its `_copy-words-from-store.ps1` brings over. |
-| `src/VpnHood.AppLib.Api.SwaggerHost/` | poses the app API (`VpnHood.AppLogic.Api`, from NuGet) to NSwag; its `_recreate-api.ps1` regenerates the SPA's TypeScript client. Never run in an app: every action throws. |
+| `src/VpnHood.AppLogic.Api.SwaggerHost/` | poses the app API (`VpnHood.AppLogic.Api`, from NuGet) to NSwag; its `_recreate-api.ps1` regenerates the SPA's TypeScript client. Never run in an app: every action throws. |
 | `src/AppUiSample.Spa.Windows/`, `…Windows.VpnHost/` | a Windows head: the SPA in a WebView2 window, over `VpnHood.AppHosting.WebView.Windows`, and its VPN host, the VPN service's own process, which the app's service starts at each connect. |
 | `src/AppUiSample.Spa.Android/` | an Android head: the SPA in the system WebView, over `VpnHood.AppHosting.WebView.Android`. |
 | `src/AppUiSample.Spa.Maui/` | a MAUI head on Android and Windows: the SPA in MAUI's own WebView, the app in its process through `VpnHood.AppHosting.Maui`. |
@@ -28,7 +28,7 @@ references and which page it places beside itself.
 ## Running a sample
 
 1. Build the SPA: `npm ci` then `npm run build` in `src/VpnHood.AppUi.Presentation.Classic.Spa`.
-2. `dotnet build VpnHood.AppUi.Spa.slnx`, or open the solution and run `AppUiSample.Spa.Windows`.
+2. `dotnet build VpnHood.App.Samples.Spa.slnx`, or open the solution and run `AppUiSample.Spa.Windows`.
 
 Each sample's build zips the SPA's `dist` into `assets/ui.zip` - the store, which the app extracts
 once and its web host serves at `/assets/` - and `assets/web-root.zip`, the page. The IP-location
@@ -51,7 +51,7 @@ files, the two `Entitlements.plist` files and `AppDelegate`.
 `http://127.0.0.1:9091` (IPv4 - `localhost` resolves to `::1` first, where nothing listens), and
 every debug head of the main repo serves one too.
 
-After a change to the C# API, run `src/VpnHood.AppLib.Api.SwaggerHost/_recreate-api.ps1`; never edit
+After a change to the C# API, run `src/VpnHood.AppLogic.Api.SwaggerHost/_recreate-api.ps1`; never edit
 `src/services/VpnHood.Client.Api.ts` by hand. Never edit `src/locales` or `src/content` either: they
 are the asset store's copy of the words, and a new string goes in VpnHood.AppUi.Assets.Classic (its
 README, "The words").

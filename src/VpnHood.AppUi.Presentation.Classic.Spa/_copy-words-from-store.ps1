@@ -17,7 +17,7 @@ param(
 $ErrorActionPreference = "Stop";
 
 if ($StoreDir -eq "") {
-    # <Vh>/VpnHood.AppUi.Spa/src/VpnHood.AppUi.Presentation.Classic.Spa -> <Vh>
+    # <Vh>/VpnHood.App.Samples.Spa/src/VpnHood.AppUi.Presentation.Classic.Spa -> <Vh>
     $vhFolder = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot "../../.."));
     $StoreDir = Join-Path $vhFolder "VpnHood/src/libs/AppUi/VpnHood.AppUi.Assets.Classic";
 }

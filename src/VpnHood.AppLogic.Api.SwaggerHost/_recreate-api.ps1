@@ -1,7 +1,7 @@
 $curDir = $PSScriptRoot;
 
 # variables
-$projectFile="$curDir/VpnHood.AppLib.Api.SwaggerHost.csproj";
+$projectFile="$curDir/VpnHood.AppLogic.Api.SwaggerHost.csproj";
 $namespace = "VpnHood.Client.Api";
 $nswagFile = "$curDir/Api/Api.nswag";
 $outBaseFile = "VpnHood.Client.Api";

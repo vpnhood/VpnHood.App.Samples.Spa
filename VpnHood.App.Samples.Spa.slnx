@@ -13,7 +13,7 @@
     <File Path="src/VpnHood.AppUi.Presentation.Classic.Spa/vite.config.ts" />
     <File Path="src/VpnHood.AppUi.Presentation.Classic.Spa/index.html" />
   </Folder>
-  <Project Path="src/VpnHood.AppLib.Api.SwaggerHost/VpnHood.AppLib.Api.SwaggerHost.csproj" />
+  <Project Path="src/VpnHood.AppLogic.Api.SwaggerHost/VpnHood.AppLogic.Api.SwaggerHost.csproj" />
   <Project Path="src/AppUiSample.Spa.Windows/AppUiSample.Spa.Windows.csproj" />
   <Project Path="src/AppUiSample.Spa.Windows.VpnHost/AppUiSample.Spa.Windows.VpnHost.csproj" />
   <Project Path="src/AppUiSample.Spa.Android/AppUiSample.Spa.Android.csproj" />

@@ -3,7 +3,7 @@
 		<Description>Poses the app API to NSwag so it can emit the OpenAPI document and the TypeScript client. Never published, never run in an app: every action throws.</Description>
 		<TargetFramework>net11.0</TargetFramework>
 		<IsPackable>false</IsPackable>
-		<RootNamespace>VpnHood.AppLib.Api.SwaggerHost</RootNamespace>
+		<RootNamespace>VpnHood.AppLogic.Api.SwaggerHost</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>

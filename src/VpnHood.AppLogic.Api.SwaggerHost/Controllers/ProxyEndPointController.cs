@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using VpnHood.AppLogic.Api;
-using VpnHood.AppLib.Api.SwaggerHost.Exceptions;
+using VpnHood.AppLogic.Api.SwaggerHost.Exceptions;
 using VpnHood.AppLogic.Api.Proxies;
 using VpnHood.Net.Toolkit.Generics;
 
 // ReSharper disable InvalidXmlDocComment
 
-namespace VpnHood.AppLib.Api.SwaggerHost.Controllers;
+namespace VpnHood.AppLogic.Api.SwaggerHost.Controllers;
 
 [ApiController]
 [Route("api/proxy-endpoints")]
